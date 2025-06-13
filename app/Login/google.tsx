@@ -5,7 +5,7 @@ import { signOut, signIn } from "../authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import React from "react";
-import Icon from "./icon";
+import Icon from "./Icon";
 import { useRouter } from "next/navigation";
 
 export default function Google() {
