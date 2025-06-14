@@ -45,7 +45,7 @@ export default function X() {
 
   useEffect(() => {
     if (user) {
-      router.push("/private");
+      router.push("/post");
     }
   }, [user, router]);
 
@@ -53,7 +53,7 @@ export default function X() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "twitter",
       options: {
-        redirectTo: `/redirect`,
+        redirectTo: `https://localhost3000/redirect`,
       },
     });
     if (error) throw new Error(error.message);

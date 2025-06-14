@@ -46,7 +46,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      router.push("/private")
+      router.push("/post")
     }
   }, [user, router])
 

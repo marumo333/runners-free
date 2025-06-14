@@ -52,7 +52,7 @@ export default function Google() {
 
   useEffect(() => {
     if (user) {
-      router.push("/private");
+      router.push("/post");
     }
   }, [user, router]);
 
@@ -60,7 +60,7 @@ export default function Google() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `/redirect`,
+        redirectTo: `https://localhost3000/redirect`,
       },
     });
     if (error) throw new Error(error.message);

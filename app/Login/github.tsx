@@ -45,7 +45,7 @@ export default function Github() {
 
   useEffect(() => {
     if (user) {
-      router.push("/private");
+      router.push("/post");
     }
   }, [user, router]);
 
@@ -53,7 +53,7 @@ export default function Github() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `https://seller-weld.vercel.app/redirect`,
+        redirectTo: `https://localhost3000/redirect`,
       },
     });
     if (error) throw new Error(error.message);
