@@ -10,7 +10,7 @@ export default function Home() {
         このアプリは、フリーランス向けのECサイトです。
       </div>
       <div className="flex flex-col gap-5">
-        <Link href="/seller" className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg text-lg transition">
+        <Link href="/Login" className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg text-lg transition">
           フリーランスの方はこちら
         </Link>
         <Link href="/customer" className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg text-lg transition">
