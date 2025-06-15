@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { supabase } from "@/utils/supabase/supabase";
 import { signIn, signOut } from "@/app/authSlice";
@@ -42,8 +41,7 @@ export default function PCComponent({ className }: { className?: string }) {
              <nav className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${className ?? ""}`}>
              {/* ロゴ＋タイトル */}
              <Link href="/" className="flex items-center space-x-2">
-                 <Image src="/Customer.png" alt="Sellerロゴ" width={50} height={25} priority />
-                 <span className="text-2xl font-bold text-blue-900">Customer</span>
+                 <span className="text-2xl font-bold text-blue-900">runners-free</span>
              </Link>
  
              {/* メニュー */}
@@ -58,8 +56,7 @@ export default function PCComponent({ className }: { className?: string }) {
             <nav className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${className ?? ""}`}>
             {/* ロゴ＋タイトル */}
             <Link href="/" className="flex items-center space-x-2">
-                <Image src="/Customer.png" alt="Sellerロゴ" width={50} height={25} priority />
-                <span className="text-2xl font-bold text-blue-900">Customer</span>
+                <span className="text-2xl font-bold text-blue-900">runnners-free</span>
             </Link>
 
             {/* メニュー */}

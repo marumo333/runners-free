@@ -99,7 +99,7 @@ export default function MobileComponent({ className }: { className?: string }) {
                 </Drawer>
               </div>
               <Link href="/" className="text-xl font-bold text-white">
-                Customer
+                runners-free
               </Link>
             </div>
           </div>
