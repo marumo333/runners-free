@@ -13,7 +13,7 @@ export default function PCComponent({ className }: { className?: string }) {
         const { data: authListener } = supabase.auth.onAuthStateChange(
           (event, session) => {
             if (session?.user) {
-              setUser(session.user.email || "GitHub User");
+              setUser(session.user.email || "Login User");
               dispatch(signIn({
                 name: session.user.email,
                 iconUrl: "",
