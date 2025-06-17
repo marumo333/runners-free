@@ -1,4 +1,4 @@
-// app/page.tsx 
+// app/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,65 +18,64 @@ export default function SignInPage() {
   const dispatch = useDispatch();
   const router = useRouter();
   useEffect(() => {
-      const { data: authListener } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          if (session?.user) {
-            setUser(session.user.email || "Google User");
-            dispatch(
-              signIn({
-                name: session.user.email,
-                iconUrl: "",
-                token: session.provider_token,
-              })
-            );
-            window.localStorage.setItem(
-              "oauth_provider_token",
-              session.provider_token || ""
-            );
-            window.localStorage.setItem(
-              "oauth_provider_refresh_token",
-              session.provider_refresh_token || ""
-            );
-          }
-  
-          if (event === "SIGNED_OUT") {
-            window.localStorage.removeItem("oauth_provider_token");
-            window.localStorage.removeItem("oauth_provider_refresh_token");
-            setUser("");
-            dispatch(signOut());
-          }
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) {
+          setUser(session.user.email || "Google User");
+          dispatch(
+            signIn({
+              name: session.user.email,
+              iconUrl: "",
+              token: session.provider_token,
+            })
+          );
+          window.localStorage.setItem(
+            "oauth_provider_token",
+            session.provider_token || ""
+          );
+          window.localStorage.setItem(
+            "oauth_provider_refresh_token",
+            session.provider_refresh_token || ""
+          );
         }
-      );
-      return () => {
-        authListener?.subscription.unsubscribe();
-      };
-    }, [dispatch]);
-  
-    useEffect(() => {
-      if (user) {
-        router.push("/post");
+
+        if (event === "SIGNED_OUT") {
+          window.localStorage.removeItem("oauth_provider_token");
+          window.localStorage.removeItem("oauth_provider_refresh_token");
+          setUser("");
+          dispatch(signOut());
+        }
       }
-    }, [user, router]);
+    );
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      router.push("/post");
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try{
-      const { error:signInError } = await supabase.auth.signInWithPassword({
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
-      })
+      });
       if (signInError) {
         throw signInError;
       }
-    }catch(error){
-      alert('エラーが発生しました');
+    } catch (error) {
+      alert("エラーが発生しました");
     }
-      };
+  };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       {/* タイトル */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Sign in to your account
         </h2>
@@ -181,19 +180,24 @@ export default function SignInPage() {
 
           {/* SNS ログインボタン */}
           <div className="mt-6 grid grid-cols-2 gap-3">
-            <Google className="w-full inline-flex justify-center py-2 px-4
+            <Google
+              className="w-full inline-flex justify-center py-2 px-4
                                border border-gray-300 rounded-md shadow-sm bg-white
-                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
-            <Github className="w-full inline-flex justify-center py-2 px-4
+                               text-sm font-medium text-gray-700 hover:bg-gray-50"
+            />
+            <Github
+              className="w-full inline-flex justify-center py-2 px-4
                                border border-gray-300 rounded-md shadow-sm bg-white
-                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
-            <X className="w-full inline-flex justify-center py-2 px-4
+                               text-sm font-medium text-gray-700 hover:bg-gray-50"
+            />
+            <X
+              className="w-full inline-flex justify-center py-2 px-4
                                border border-gray-300 rounded-md shadow-sm bg-white
-                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
+                               text-sm font-medium text-gray-700 hover:bg-gray-50"
+            />
           </div>
         </div>
       </div>
     </div>
   );
 }
-
