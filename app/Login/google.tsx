@@ -60,7 +60,7 @@ export default function Google() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `https://localhost3000/redirect`,
+        redirectTo: `http://localhost:3000/redirect`,
       },
     });
     if (error) throw new Error(error.message);
