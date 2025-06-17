@@ -1,66 +1,199 @@
-"use client"
-import { supabase } from "@/utils/supabase/supabase";
-import "../globals.css"
-import { signOut } from "../authSlice";
-import { signIn } from "../authSlice";
-import { useSelector, useDispatch } from "react-redux";
+// app/page.tsx 
+"use client";
+
 import { useEffect, useState } from "react";
-import React from "react";
-import Google from "./google";
-import X from "./X";
+import { supabase } from "@/utils/supabase/supabase";
+import { useDispatch } from "react-redux";
+import { signIn, signOut } from "../authSlice";
 import { useRouter } from "next/navigation";
-import Github from "./github"
-export default function Home() {
-  const auth = useSelector((state: any) => state.auth.isSignIn);
-  const dispatch = useDispatch()
-  const [user, setUser] = useState("")//ログイン情報を保持するステート
+import Link from "next/link";
+import Google from "./google";
+import Github from "./github";
+import X from "./X";
+
+export default function SignInPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState("");
+  const dispatch = useDispatch();
   const router = useRouter();
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log(event)
-        if (session?.user) {
-          setUser(session.user.email || "Login User")
-          dispatch(signIn({
-            name: session.user.email,
-            iconUrl: "",
-            token: session.provider_token
-          }))
-          window.localStorage.setItem('oauth_provider_token', session.provider_token || "");
-          window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token || "")
+      const { data: authListener } = supabase.auth.onAuthStateChange(
+        (event, session) => {
+          if (session?.user) {
+            setUser(session.user.email || "Google User");
+            dispatch(
+              signIn({
+                name: session.user.email,
+                iconUrl: "",
+                token: session.provider_token,
+              })
+            );
+            window.localStorage.setItem(
+              "oauth_provider_token",
+              session.provider_token || ""
+            );
+            window.localStorage.setItem(
+              "oauth_provider_refresh_token",
+              session.provider_refresh_token || ""
+            );
+          }
+  
+          if (event === "SIGNED_OUT") {
+            window.localStorage.removeItem("oauth_provider_token");
+            window.localStorage.removeItem("oauth_provider_refresh_token");
+            setUser("");
+            dispatch(signOut());
+          }
         }
-
-        if (event === 'SIGNED_OUT') {
-          window.localStorage.removeItem('oauth_provider_token')
-          window.localStorage.removeItem('oauth_provider_refresh_token')
-          setUser("")//user情報をリセット
-          dispatch(signOut());
-        }
+      );
+      return () => {
+        authListener?.subscription.unsubscribe();
+      };
+    }, [dispatch]);
+  
+    useEffect(() => {
+      if (user) {
+        router.push("/post");
       }
-    );
-    //クリーンアップ処理追加（リスナー削除）
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [dispatch]);
+    }, [user, router]);
 
-  useEffect(() => {
-    if (user) {
-      router.push("/post")
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try{
+      const { error:signInError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      })
+      if (signInError) {
+        throw signInError;
+      }
+    }catch(error){
+      alert('エラーが発生しました');
     }
-  }, [user, router])
-
+      };
   return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6 py-24 sm:py-32">
-        <h1 className="text-3xl font-bold text-center mb-10">ログイン画面</h1>
-        <div className="flex flex-wrap justify-center gap-10">
-          <Github />
-          <Google />
-          <X />
-        </div>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      {/* タイトル */}
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          Sign in to your account
+        </h2>
       </div>
 
-    </>
-  )
+      {/* カード本体 */}
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-6 shadow rounded-lg sm:px-10">
+          {/* Email/Password フォーム */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email address
+              </label>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300
+                             rounded-md shadow-sm placeholder-gray-400 focus:outline-none
+                             focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Email address"
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300
+                             rounded-md shadow-sm placeholder-gray-400 focus:outline-none
+                             focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  placeholder="Password"
+                />
+              </div>
+            </div>
+
+            {/* Remember + Forgot */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-sm">
+                <input
+                  type="checkbox"
+                  name="remember"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500
+                             border-gray-300 rounded"
+                />
+                <span className="ml-2 text-gray-700">Remember me</span>
+              </label>
+              <div className="text-sm">
+                <Link
+                  href="#"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
+
+            {/* Sign In ボタン */}
+            <div>
+              <button
+                type="submit"
+                className="w-full flex justify-center py-2 px-4 border border-transparent
+                           text-sm font-medium rounded-md text-white bg-indigo-600
+                           hover:bg-indigo-700 focus:outline-none focus:ring-2
+                           focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Sign in
+              </button>
+            </div>
+          </form>
+
+          {/* 区切り線 + テキスト */}
+          <div className="mt-6 flex items-center">
+            <div className="flex-grow border-t border-gray-300" />
+            <span className="mx-4 text-gray-500 text-sm">Or continue with</span>
+            <div className="flex-grow border-t border-gray-300" />
+          </div>
+
+          {/* SNS ログインボタン */}
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <Google className="w-full inline-flex justify-center py-2 px-4
+                               border border-gray-300 rounded-md shadow-sm bg-white
+                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
+            <Github className="w-full inline-flex justify-center py-2 px-4
+                               border border-gray-300 rounded-md shadow-sm bg-white
+                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
+            <X className="w-full inline-flex justify-center py-2 px-4
+                               border border-gray-300 rounded-md shadow-sm bg-white
+                               text-sm font-medium text-gray-700 hover:bg-gray-50" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
+
