@@ -144,7 +144,7 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/search" className="mb-4" onClick={close}>
                       商品検索
                     </Link>
-                    <Link href="/login" className="mb-4" onClick={close}>
+                    <Link href="/Login" className="mb-4" onClick={close}>
                       ログイン
                     </Link>
                   </div>
