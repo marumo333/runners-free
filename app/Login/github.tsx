@@ -8,7 +8,10 @@ import React from "react";
 import Icon from "./Icon";
 import { useRouter } from "next/navigation";
 
-export default function Github() {
+type GithubProps = {
+  className?: string
+}
+export default function Github({className}:GithubProps) {
   const dispatch = useDispatch();
   const [user, setUser] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -77,29 +80,31 @@ export default function Github() {
     fetchAvatarUrl();
   }, []);
 
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 w-64">
-      <button
-        onClick={signInGithub}
-        className="bg-black hover:bg-gray-800 text-white w-full"
-        disabled={!!user}
-      >
-        GitHubでログイン
-      </button>
-
-      {user ? (
-        <button
-          onClick={signOutGithub}
-          className="bg-gray-500 hover:bg-gray-600 text-white w-full"
-        >
-          ログアウト
-        </button>
-      ) : (
-        <div className="text-sm text-gray-500">ログイン状態を確認中...</div>
-      )}
-
-      <Icon url={avatarUrl} />
-      {!user && <div className="text-sm text-gray-600">ログインしてください</div>}
-    </div>
+  return  user ? (
+    <button
+      onClick={signOutGithub}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      ログアウト
+    </button>
+  ) : (
+    <button
+      onClick={signInGithub}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      Github
+    </button>
   );
 }

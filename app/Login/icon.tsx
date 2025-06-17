@@ -1,28 +1,30 @@
-"use client"
-import Image from "next/image";
+// components/Icon.tsx
+"use client";
+
 import React, { FC } from "react";
+import Image from "next/image";
 
 type Props = {
   url: string;
+  className?: string;     // ← 追加
 };
 
-const Icon: FC<Props> = ({ url }) => {
-  return (
-    <div style={{ width: 200, height: 200, position: "relative", borderRadius: "50%", overflow: "hidden" }}>
-      {url ? (
-        <Image
-          src={url}
-          alt="Avatar"
-          fill
-          style={{ objectFit: "cover" }} // 画像を適切に調整
-          unoptimized={true}
-          priority
-        />
-      ) : (
-        <div style={{ width: "100%", height: "100%", background: "gray" }} />
-      )}
-    </div>
-  );
-};
+const Icon: FC<Props> = ({ url, className = "" }) => (
+  <div className={`relative rounded-full overflow-hidden bg-gray-200 ${className}`}>
+    {url ? (
+      <Image
+        src={url}
+        alt="Avatar"
+        fill
+        className="object-cover"
+        unoptimized
+        priority
+      />
+    ) : (
+      <div className="w-full h-full bg-gray-400" />
+    )}
+  </div>
+);
 
 export default Icon;
+

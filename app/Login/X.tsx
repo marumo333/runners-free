@@ -9,7 +9,10 @@ import React from "react";
 import Icon from "./Icon";
 import { useRouter } from "next/navigation";
 
-export default function X() {
+type XProps ={
+  className?:string;
+}
+export default function X({className}:XProps) {
   const dispatch = useDispatch();
   const [user, setUser] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -77,27 +80,31 @@ export default function X() {
     fetchAvatarUrl();
   }, []);
 
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 w-64">
-      <button
-        onClick={signInX}
-        className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg w-full"
-      >
-        Xでログイン
-      </button>
-
-      {user ? (
-        <button
-          onClick={signOutX}
-          className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg w-full"
-        >
-          ログアウト
-        </button>
-      ) : (
-        <div className="text-sm text-gray-500">ログイン情報を取得中...</div>
-      )}
-      <Icon url={avatarUrl} />
-      {!user && <div className="text-sm text-gray-600">ログインしてください</div>}
-    </div>
+  return  user ? (
+    <button
+      onClick={signOutX}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      ログアウト
+    </button>
+  ) : (
+    <button
+      onClick={signInX}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      X
+    </button>
   );
 }

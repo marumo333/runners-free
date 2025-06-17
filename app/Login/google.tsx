@@ -8,7 +8,10 @@ import React from "react";
 import Icon from "./Icon";
 import { useRouter } from "next/navigation";
 
-export default function Google() {
+type GoogleProps = {
+  className?:string
+}
+export default function Google({className}:GoogleProps) {
   const auth = useSelector((state: any) => state.auth.isSignIn);
   const dispatch = useDispatch();
   const [user, setUser] = useState("");
@@ -86,27 +89,31 @@ export default function Google() {
     fetchAvatarUrl();
   }, []);
 
-  return (
-    <div className="flex flex-col items-center justify-center space-y-4 w-64">
-      <button
-        onClick={signInGoogle}
-        className="bg-red-500 hover:bg-red-600 text-white w-full"
-      >
-        Googleでログイン
-      </button>
-
-      {user ? (
-        <button
-          onClick={signOutGoogle}
-          className="bg-gray-500 hover:bg-gray-600 text-white w-full"
-        >
-          ログアウト
-        </button>
-      ) : (
-        <div className="text-sm text-gray-500">ログイン情報を取得中...</div>
-      )}
-      <Icon url={avatarUrl} />
-      {!user && <div className="text-sm text-gray-600">ログインしてください</div>}
-    </div>
+  return  user ? (
+    <button
+      onClick={signOutGoogle}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      ログアウト
+    </button>
+  ) : (
+    <button
+      onClick={signInGoogle}
+      className={`
+        w-full inline-flex items-center justify-center
+        py-2 px-4 border border-gray-300 rounded-md shadow-sm
+        bg-white text-sm font-medium text-gray-700 hover:bg-gray-50
+        ${className}
+      `}
+    >
+      <Icon url={avatarUrl} className="h-5 w-5 mr-2" />
+      Google
+    </button>
   );
 }
