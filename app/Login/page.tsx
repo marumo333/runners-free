@@ -54,7 +54,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (user) {
-      router.push("/post");
+      router.push("http://localhost:3000/post");
     }
   }, [user, router]);
 

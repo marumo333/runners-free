@@ -28,7 +28,7 @@ export default function Redirect() {
                     window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token || "")
                     window.history.replaceState({}, document.title, window.location.pathname);
 
-                    router.push("/post"); 
+                    router.push("http://localhost:3000/post"); 
 
                 }
 
