@@ -11,10 +11,7 @@ export default function Home() {
       </div>
       <div className="flex flex-col gap-5">
         <Link href="/Login" className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg text-lg transition">
-          フリーランスの方はこちら
-        </Link>
-        <Link href="/customer" className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg text-lg transition">
-          お客様はこちら
+          はじめる
         </Link>
       </div>
     </div>

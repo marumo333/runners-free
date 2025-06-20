@@ -1,7 +1,7 @@
+//register/page.tsx
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase/supabase";
 
 export default function Register() {
   const [email, setEmail] = useState("");
