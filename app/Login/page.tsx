@@ -77,7 +77,7 @@ export default function SignInPage() {
       {/* タイトル */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+          サインイン
         </h2>
       </div>
 
@@ -136,27 +136,6 @@ export default function SignInPage() {
               </div>
             </div>
 
-            {/* Remember + Forgot */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center text-sm">
-                <input
-                  type="checkbox"
-                  name="remember"
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500
-                             border-gray-300 rounded"
-                />
-                <span className="ml-2 text-gray-700">Remember me</span>
-              </label>
-              <div className="text-sm">
-                <Link
-                  href="#"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            </div>
-
             {/* Sign In ボタン */}
             <div>
               <button
@@ -168,6 +147,14 @@ export default function SignInPage() {
               >
                 Sign in
               </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-sm">
+                <Link href="/register" className="w-full flex justify-center py-2 px-4 border border-transparent
+                           text-sm font-medium rounded-md text-white bg-green-600
+                           hover:bg-green-700 focus:outline-none focus:ring-2
+                           focus:ring-indigo-500 focus:ring-offset-2">新規登録はこちら</Link>
+              </label>
             </div>
           </form>
 
