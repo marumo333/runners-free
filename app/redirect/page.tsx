@@ -1,51 +1,40 @@
-"use client"
-import { useSelector, useDispatch } from "react-redux";
-import React, { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabase";
-import { signOut, signIn } from "../authSlice";
-import { useRouter } from "next/navigation";
+// app/redirect/page.tsx
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabase/supabase";
 
 export default function Redirect() {
-    const auth = useSelector((state: any) => state.auth.isSignIn);
-    const dispatch = useDispatch()
-    const [user, setUser] = useState("")//ログイン情報を保持するステート
-    const router = useRouter();
+  const router = useRouter();
 
+  useEffect(() => {
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        router.replace("/login");
+        return;
+      }
 
-    useEffect(() => {
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-            (event, session) => {
-                console.log(event)
-                if (session?.user) {
-                    setUser(session.user.email || "Login User")
-                    dispatch(signIn({
-                        name: session.user.email,
-                        iconUrl: "",
-                        token: session.provider_token
-                    }))
-                    window.localStorage.setItem('oauth_provider_token', session.provider_token || "");
-                    window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token || "")
-                    window.history.replaceState({}, document.title, window.location.pathname);
+      const { data: profile, error } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+      if (error || !profile) {
+        router.replace("/login");
+        return;
+      }
 
-                    router.push("http://localhost:3000/post"); 
+      if (profile.role === "admin") {
+        router.replace("/dashboard/admin");
+      } else {
+        router.replace("/dashboard/customer");
+      }
+    })();
+  }, [router]);
 
-                }
-
-                if (event === 'SIGNED_OUT') {
-                    window.localStorage.removeItem('oauth_provider_token')
-                    window.localStorage.removeItem('oauth_provider_refresh_token')
-                    dispatch(signOut());
-                    setUser("")//user情報をリセット
-                }
-            }
-        );
-        //クリーンアップ処理追加（リスナー削除）
-        return () => {
-            authListener?.subscription.unsubscribe();
-        };
-    }, [dispatch]);
-    return (
-        <div>Homeページに移動しています。</div>
-    )
+  return <p className="text-center mt-20">リダイレクト中…</p>;
 }
