@@ -1,10 +1,10 @@
-// app/page.tsx
+// Login/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabase";
 import { useDispatch } from "react-redux";
-import { signIn, signOut } from "../authSlice";
+import { signIn} from "../authSlice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Google from "./google";
@@ -14,63 +14,29 @@ import X from "./X";
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
-  useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          setUser(session.user.email || "Google User");
-          dispatch(
-            signIn({
-              name: session.user.email,
-              iconUrl: "",
-              token: session.provider_token,
-            })
-          );
-          window.localStorage.setItem(
-            "oauth_provider_token",
-            session.provider_token || ""
-          );
-          window.localStorage.setItem(
-            "oauth_provider_refresh_token",
-            session.provider_refresh_token || ""
-          );
-        }
-
-        if (event === "SIGNED_OUT") {
-          window.localStorage.removeItem("oauth_provider_token");
-          window.localStorage.removeItem("oauth_provider_refresh_token");
-          setUser("");
-          dispatch(signOut());
-        }
-      }
-    );
-    return () => {
-      authListener?.subscription.unsubscribe();
-    };
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (user) {
-      router.push("http://localhost:3000/post");
-    }
-  }, [user, router]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-      if (signInError) {
-        throw signInError;
-      }
-    } catch (error) {
-      alert("エラーが発生しました");
+    // サインイン
+    const { data: signInData, error: signInError } =
+      await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      alert(signInError.message);
+      return;
     }
+
+    // Redux 登録
+    dispatch(
+      signIn({
+        name: signInData.user?.email || "",
+        iconUrl: signInData.user?.user_metadata?.avatar_url || "",
+        token: signInData.session?.access_token || "",
+      })
+    );
+
+    // /redirect へ移動
+    router.replace("/redirect");
   };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
