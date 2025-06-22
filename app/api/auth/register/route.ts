@@ -1,28 +1,31 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// app/api/auth/register/route.ts
+import { NextResponse } from "next/server";
 import { supabase } from "@/utils/supabase/supabase";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
+export async function POST(req: Request) {
+  const { email, password, role } = await req.json();
 
-  const { email, password, role } = req.body;
-
+  // 1) バリデーション
   if (!/\S+@\S+\.\S+/.test(email)) {
-    return res.status(400).json({ error: "有効なメールアドレスを入力してください。" });
+    return NextResponse.json(
+      { error: "有効なメールアドレスを入力してください。" },
+      { status: 400 }
+    );
   }
   if (typeof password !== "string" || password.length < 8) {
-    return res.status(400).json({ error: "パスワードは8文字以上で入力してください。" });
+    return NextResponse.json(
+      { error: "パスワードは8文字以上で入力してください。" },
+      { status: 400 }
+    );
   }
   if (!["admin", "customer"].includes(role)) {
-    return res.status(400).json({ error: "無効なユーザー種別です。" });
+    return NextResponse.json(
+      { error: "無効なユーザー種別です。" },
+      { status: 400 }
+    );
   }
 
-  // サインアップ時に role を user_metadata にも保存
+  // 2) サインアップ
   const { data, error: signUpError } = await supabase.auth.signUp({
     email,
     password,
@@ -31,21 +34,35 @@ export default async function handler(
     }
   });
   if (signUpError) {
-    return res.status(400).json({ error: signUpError.message });
+    return NextResponse.json({ error: signUpError.message }, { status: 400 });
   }
 
+  // 3) users テーブルにも profile レコードを作る
   const userId = data.user?.id;
   if (!userId) {
-    return res.status(500).json({ error: "ユーザー登録に失敗しました。" });
+    return NextResponse.json(
+      { error: "ユーザー登録に失敗しました。" },
+      { status: 500 }
+    );
   }
-
   const { error: profileError } = await supabase
     .from("users")
     .insert({ id: userId, role })
     .single();
   if (profileError) {
-    return res.status(500).json({ error: "プロファイル作成に失敗しました。" });
+    return NextResponse.json(
+      { error: "プロファイル作成に失敗しました。" },
+      { status: 500 }
+    );
   }
 
-  return res.status(201).json({ error: null });
+  // 4) 成功レスポンス
+  return NextResponse.json({ error: null }, { status: 201 });
+}
+
+export async function GET() {
+  return NextResponse.json(
+    { error: "Method Not Allowed" },
+    { status: 405, headers: { Allow: "POST" } }
+  );
 }
