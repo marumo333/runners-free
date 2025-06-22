@@ -87,7 +87,7 @@ export default function Register() {
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             既にアカウントをお持ちですか？{" "}
-            <a href="/login" className="text-indigo-600 hover:text-indigo-800">
+            <a href="/Login" className="text-indigo-600 hover:text-indigo-800">
               ログイン
             </a>
           </p>
