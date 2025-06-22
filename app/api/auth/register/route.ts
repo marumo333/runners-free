@@ -1,7 +1,6 @@
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
-import { supabase } from "@/utils/supabase/supabaseClient";
-
+import { supabaseAdmin } from "@/utils/supabase/supabaseAdmin";
 export async function POST(req: Request) {
   const { email, password, role } = await req.json();
 
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
   }
 
   // 2) サインアップ
-  const { data, error: signUpError } = await supabase.auth.signUp({
+  const { data, error: signUpError } = await supabaseAdmin.auth.signUp({
     email,
     password,
     options: {
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
-  const { error: profileError } = await supabase
+  const { error: profileError } = await supabaseAdmin
     .from("users")
     .insert({ id: userId, role })
     .single();
