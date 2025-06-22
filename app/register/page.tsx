@@ -1,5 +1,5 @@
 //register/page.tsx
-"use client";
+"use client"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -12,7 +12,7 @@ export default function Register() {
     e.preventDefault();
     const { error } = await fetch("/api/auth/register", {
       method: "POST",
-      headers: { "Content-type": "application/json" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password, role }),
     }).then((res) => res.json());
     if (!error) {
@@ -42,6 +42,7 @@ export default function Register() {
                 placeholder="Email"
                 required
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                autoComplete="email"
               />
             </div>
             <div>
@@ -59,6 +60,7 @@ export default function Register() {
                 required
                 placeholder="********"
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                autoComplete="password"
               />
             </div>
 
@@ -74,7 +76,7 @@ export default function Register() {
                 onChange={(e) => setRole(e.target.value as any)}
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="freelancer">フリーランス</option>
+                <option value="admin">フリーランス</option>
                 <option value="customer">お客様</option>
               </select>
             </div>
