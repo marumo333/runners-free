@@ -1,6 +1,6 @@
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
-import { supabase } from "@/utils/supabase/supabase";
+import { supabase } from "@/utils/supabase/supabaseClient";
 
 export async function POST(req: Request) {
   const { email, password, role } = await req.json();

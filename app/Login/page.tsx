@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabase";
+import { supabase } from "@/utils/supabase/supabaseClient";
 import { useDispatch } from "react-redux";
 import { signIn} from "../authSlice";
 import { useRouter } from "next/navigation";

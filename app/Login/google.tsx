@@ -1,5 +1,5 @@
 "use client";
-import { supabase } from "@/utils/supabase/supabase";
+import { supabase } from "@/utils/supabase/supabaseClient";
 import "../globals.css";
 import { signOut, signIn } from "../authSlice";
 import { useSelector, useDispatch } from "react-redux";

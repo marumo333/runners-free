@@ -1,6 +1,6 @@
 "use client";
 import { signIn, signOut } from "@/app/authSlice";
-import { supabase } from "@/utils/supabase/supabase";
+import { supabase } from "@/utils/supabase/supabaseClient";
 import { Burger, Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
