@@ -119,7 +119,7 @@ export default function Customer(){
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl mb-4">管理画面</h1>
+      <h1 className="text-2xl mb-4">お客様の管理画面</h1>
       <p className="mb-2">ログインユーザー：{user.email} （{user.role}）</p>
 
       <form onSubmit={profSubmit} className="space-y-6">
