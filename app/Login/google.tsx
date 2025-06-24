@@ -55,7 +55,7 @@ export default function Google({className}:GoogleProps) {
 
   useEffect(() => {
     if (user) {
-      router.push("http://localhost:3000/post");
+      router.push("http://localhost:3000/redirect");
     }
   }, [user, router]);
 

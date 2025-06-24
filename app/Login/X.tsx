@@ -48,7 +48,7 @@ export default function X({className}:XProps) {
 
   useEffect(() => {
     if (user) {
-      router.push("http://localhost:3000/post");
+      router.push("http://localhost:3000/redirect");
     }
   }, [user, router]);
 
