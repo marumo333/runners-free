@@ -59,6 +59,7 @@ export default function Register() {
                 id="password"
                 name="password"
                 value={password}
+                autoComplete="current-password"
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={8}
                 required
