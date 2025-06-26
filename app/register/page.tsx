@@ -37,6 +37,8 @@ export default function Register() {
               </label>
               <input
                 type="email"
+                id="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
@@ -54,13 +56,14 @@ export default function Register() {
               </label>
               <input
                 type="password"
+                id="password"
+                name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={8}
                 required
                 placeholder="********"
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                autoComplete="password"
               />
             </div>
 
@@ -72,6 +75,8 @@ export default function Register() {
                 ロールを選択
               </label>
               <select
+                id="role"
+                name="role"
                 value={role}
                 onChange={(e) => setRole(e.target.value as any)}
                 className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
