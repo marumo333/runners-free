@@ -1,7 +1,8 @@
+// app/admin/page.tsx
 "use client";
 
-import { supabase } from "@/utils/supabase/supabaseClient";
 import React, { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabase/supabaseClient";
 
 type AvatarData = {
   id: string;
@@ -13,45 +14,47 @@ type AvatarData = {
 };
 
 export default function Admin() {
-  const [user, setUser] = useState<{ id: string; email: string; role?: string } | null>(null);
+  const [user, setUser]       = useState<{ id: string; email: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [username, setUsername] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [profile, setProfile] = useState<AvatarData | null>(null);
 
+  // 初期化：ログインユーザーと既存プロフィール取得
   useEffect(() => {
-    const init = async () => {
+    (async () => {
       setLoading(true);
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData.user) {
+      const { data: uData, error: uErr } = await supabase.auth.getUser();
+      if (uErr || !uData.user) {
         setLoading(false);
         return;
       }
-      const u = userData.user;
+      const u = uData.user;
       setUser({ id: u.id, email: u.email!, role: (u.user_metadata as any)?.role });
 
-      const { data: avatarData } = await supabase
+      const { data: avat, error: avatErr } = await supabase
         .from("avatars")
         .select("*")
         .eq("user_id", u.id)
         .maybeSingle();
-      if (avatarData) {
-        setProfile(avatarData);
-        setUsername(avatarData.username);
+      if (avat) {
+        setProfile(avat);
+        setUsername(avat.username);
       }
       setLoading(false);
-    };
-    init();
+    })();
   }, []);
 
   if (loading) return <p className="text-center py-10">ローディング中…</p>;
-  if (!user) return <p className="text-center py-10 text-red-500">ログインしてください。</p>;
+  if (!user)  return <p className="text-center py-10 text-red-500">ログインしてください。</p>;
 
+  // ファイル選択ハンドラ
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAvatarFile(e.target.files?.[0] ?? null);
   };
 
+  // プロフィール更新
   const profSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -59,35 +62,52 @@ export default function Admin() {
     let publicUrl = profile?.icon_url ?? "";
 
     if (avatarFile) {
-      const filePath = `${user.id}/${Date.now()}_${avatarFile.name}`;
-      const { error: upError } = await supabase.storage
+      // ファイル名をサニタイズ（日本語や空白を除去）
+      const safeName = avatarFile.name.replace(/[^\w\-.]/g, "_");
+      const filePath = `${user.id}/${Date.now()}_${safeName}`;
+      console.log("Uploading to avatars bucket at:", filePath);
+
+      const { error: upErr } = await supabase.storage
         .from("avatars")
         .upload(filePath, avatarFile, { cacheControl: "3600", upsert: true });
-      if (upError) {
-        console.error(upError);
+      if (upErr) {
+        console.error("アップロード失敗:", upErr.message);
+        alert(`アップロード失敗: ${upErr.message}`);
         return;
       }
-      const { data: urlData} = supabase.storage.from("avatars").getPublicUrl(filePath);
+
+      // パブリック URL 取得
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
       publicUrl = urlData.publicUrl;
     }
 
-    const { error: dbError } = await supabase
+    // upsert（INSERT or UPDATE）
+    const { error: dbErr } = await supabase
       .from("avatars")
       .upsert(
         { user_id: user.id, username, icon_url: publicUrl },
         { onConflict: "user_id" }
       );
-    if (dbError) {
-      console.error(dbError);
+    if (dbErr) {
+      console.error("DB書き込み失敗:", dbErr.message);
+      alert(`保存失敗: ${dbErr.message}`);
       return;
     }
 
-    const { data: newProfile } = await supabase
+    // 最新プロフィール再フェッチ
+    const { data: newProf, error: newErr } = await supabase
       .from("avatars")
       .select("*")
       .eq("user_id", user.id)
       .maybeSingle();
-    setProfile(newProfile ?? null);
+    if (newErr) {
+      console.warn("再フェッチ失敗:", newErr.message);
+    } else {
+      setProfile(newProf);
+    }
+
     alert("プロフィールを更新しました！");
   };
 
@@ -98,7 +118,7 @@ export default function Admin() {
           フリーランス管理画面
         </h1>
         <p className="text-sm text-gray-600 mb-8">
-          ログインユーザー：<span className="font-medium">{user.email}</span> （役割：{user.role}）
+          ログインユーザー：<span className="font-medium">{user.email}</span>（{user.role}）
         </p>
 
         <form onSubmit={profSubmit} className="grid grid-cols-1 gap-6">
@@ -109,12 +129,11 @@ export default function Admin() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={e => setUsername(e.target.value)}
               placeholder="Your Name"
               className="mt-1 block w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               アバター画像
@@ -126,7 +145,6 @@ export default function Admin() {
               className="block w-full text-sm text-gray-600"
             />
           </div>
-
           <button
             type="submit"
             className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition"
