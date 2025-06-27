@@ -31,7 +31,7 @@ export default function Admin() {
       const u = userData.user;
       setUser({ id: u.id, email: u.email!, role: (u.user_metadata as any)?.role });
 
-      const { data: avatarData, error: avatarError } = await supabase
+      const { data: avatarData } = await supabase
         .from("avatars")
         .select("*")
         .eq("user_id", u.id)
@@ -67,7 +67,7 @@ export default function Admin() {
         console.error(upError);
         return;
       }
-      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      const { data: urlData} = supabase.storage.from("avatars").getPublicUrl(filePath);
       publicUrl = urlData.publicUrl;
     }
 
