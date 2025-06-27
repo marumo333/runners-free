@@ -57,7 +57,7 @@ export async function POST(req: Request) {
     const { error: profileError } = await supabaseAdmin
       .from("users")
       .insert({ id: userId, role })
-      .single();
+      .maybeSingle();
     if (profileError) {
       console.error("[register] profile insert error:", profileError);
       return NextResponse.json({ error: "プロファイル作成に失敗しました。" }, { status: 500 });
