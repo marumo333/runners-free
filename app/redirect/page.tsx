@@ -14,7 +14,7 @@ export default function Redirect() {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        router.replace("/login");
+        router.replace("/Login");
         return;
       }
 
@@ -22,9 +22,9 @@ export default function Redirect() {
         .from("users")
         .select("role")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
       if (error || !profile) {
-        router.replace("/login");
+        router.replace("/Login");
         return;
       }
 
