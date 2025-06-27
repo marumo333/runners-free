@@ -48,7 +48,7 @@ export default function Github({className}:GithubProps) {
 
   useEffect(() => {
     if (user) {
-      router.push("http://localhost:3000/redirect");
+      router.push("/redirect");
     }
   }, [user, router]);
 
