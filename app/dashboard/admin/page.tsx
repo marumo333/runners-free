@@ -35,7 +35,7 @@ export default function Admin() {
         .from("avatars")
         .select("*")
         .eq("user_id", u.id)
-        .single();
+        .maybeSingle();
       if (avatarData) {
         setProfile(avatarData);
         setUsername(avatarData.username);
@@ -86,7 +86,7 @@ export default function Admin() {
       .from("avatars")
       .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
     setProfile(newProfile ?? null);
     alert("プロフィールを更新しました！");
   };
