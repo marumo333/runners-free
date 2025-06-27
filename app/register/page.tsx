@@ -1,5 +1,6 @@
-//register/page.tsx
-"use client"
+// app/register/page.tsx
+"use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -8,99 +9,120 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "customer">("customer");
   const router = useRouter();
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { error } = await fetch("/api/auth/register", {
+
+    // ペイロードをトリムして整形
+    const payload = {
+      email: email.trim(),
+      password: password.trim(),
+      role,
+    };
+    console.log("Register payload:", payload);
+
+    // API 呼び出し
+    const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, role }),
-    }).then((res) => res.json());
-    if (!error) {
-      router.replace("/Login");
-    } else {
-      alert(error);
+      body: JSON.stringify(payload),
+    });
+
+    // ステータスコードで判定
+    if (!res.ok) {
+      const err = await res.json();
+      console.error("Register failed:", err);
+      alert(err.error || err.message || "登録に失敗しました");
+      return;
     }
+
+    // 成功時
+    console.log("Register succeeded");
+    // ページ名は小文字 /login
+    router.replace("/Login");
   };
 
   return (
-    <>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-semibold text-center mb-6">新規登録</h1>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                autoComplete="email"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password (8文字以上)
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={password}
-                autoComplete="current-password"
-                onChange={(e) => setPassword(e.target.value)}
-                minLength={8}
-                required
-                placeholder="********"
-                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700"
-              >
-                ロールを選択
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value as any)}
-                className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="admin">フリーランス</option>
-                <option value="customer">お客様</option>
-              </select>
-            </div>
-            <button
-              type="submit"
-              className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-semibold text-center mb-6">新規登録</h1>
+        <form onSubmit={onSubmit} className="space-y-4">
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
             >
-              登録する
-            </button>
-          </form>
-          <p className="mt-4 text-center text-sm text-gray-600">
-            既にアカウントをお持ちですか？{" "}
-            <a href="/Login" className="text-indigo-600 hover:text-indigo-800">
-              ログイン
-            </a>
-          </p>
-        </div>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              autoComplete="email"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password (8文字以上)
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+              required
+              minLength={8}
+              autoComplete="current-password"
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          {/* Role */}
+          <div>
+            <label
+              htmlFor="role"
+              className="block text-sm font-medium text-gray-700"
+            >
+              ロールを選択
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "admin" | "customer")}
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="admin">フリーランス</option>
+              <option value="customer">お客様</option>
+            </select>
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            登録する
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-sm text-gray-600">
+          既にアカウントをお持ちですか？{" "}
+          <a href="/login" className="text-indigo-600 hover:text-indigo-800">
+            ログイン
+          </a>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
