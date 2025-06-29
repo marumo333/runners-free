@@ -135,16 +135,47 @@ export default function Admin() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              アバター画像
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-600"
-            />
-          </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    アバター画像
+  </label>
+
+  {/* ドロップゾーン兼クリックボタン */}
+  <label
+    htmlFor="avatar"        
+    className="flex flex-col items-center justify-center
+               w-full h-32 rounded-lg cursor-pointer
+               border-2 border-dashed border-gray-300
+               hover:border-indigo-400 hover:bg-indigo-50
+               focus-within:ring-2 focus-within:ring-indigo-400
+               transition"
+  >
+    {avatarFile ? (
+      <span className="text-sm text-indigo-600">{avatarFile.name}</span>
+    ) : (
+      <>
+        {/* アイコン (Heroicons/Feather などお好みで) */}
+        <svg className="w-8 h-8 mb-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+            d="M12 4v16m8-8H4"/>
+        </svg>
+        <span className="text-sm text-gray-600">
+          クリックして選択 / ドロップ
+        </span>
+      </>
+    )}
+    {/* 実際の input は隠す */}
+    <input
+      id="avatar"
+      type="file"
+      accept="image/*"
+      onChange={e => {
+        setAvatarFile(e.target.files?.[0] ?? null);
+        handleFileChange(e);          // ←既存の処理を呼び出し
+      }}
+      className="hidden"
+    />
+  </label>
+</div>
           <button
             type="submit"
             className="w-full py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-500 transition"
