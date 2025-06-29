@@ -8,77 +8,115 @@ import { signIn, signOut } from "@/app/authSlice";
 type Role = "admin" | "customer" | null;
 
 export default function PCComponent({ className }: { className?: string }) {
-    const dispatch = useDispatch();
-    const [role,setRole] =useState<Role>(null)
+  const dispatch = useDispatch();
+  const [role, setRole] = useState<Role>(null);
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
-    useEffect(() => {
-        const { data: authListener } = supabase.auth.onAuthStateChange(
-          async (event, session) => {
-            if (session?.user) {
-              const userRole = (session.user.user_metadata?.role as Role | undefined) ?? null;
-              setRole(userRole);
-              setUser(session.user.email || "Login User");
-              dispatch(signIn({
-                name: session.user.email,
-                iconUrl: "",
-                token: session.provider_token
-              }));
-              window.localStorage.setItem('oauth_provider_token', session.provider_token || "");
-              window.localStorage.setItem('oauth_provider_refresh_token', session.provider_refresh_token || "");
-            }
-    
-            if (event === 'SIGNED_OUT') {
-              window.localStorage.removeItem('oauth_provider_token');
-              window.localStorage.removeItem('oauth_provider_refresh_token');
-              setUser("");
-              setRole(null);
-              dispatch(signOut());
-            }
-          }
-        );
-    
-        return () => {
-          authListener?.subscription.unsubscribe();
-        };
-      }, [dispatch]);
-    return (<>
-        {user?(
-             <nav className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${className ?? ""}`}>
-             {/* ロゴ＋タイトル */}
-             <Link href="/" className="flex items-center space-x-2">
-                 <span className="text-2xl font-bold text-blue-900">runners-free</span>
-             </Link>
- 
-             {/* メニュー */}
-             <ul className="hidden md:flex space-x-6 text-blue-900 font-bold">
-                 <li><Link href="/logout">ログアウト</Link></li>
-                 <li><Link href="/postedInfo">商品一覧</Link></li>
-                 <li><Link href="/myPage">マイページ</Link></li>
-                 <li><Link href="/search" >商品検索</Link></li>
-                 {role==="admin"&&(
-                      <Link href="/post" className="mb-4" onClick={close}>
-                      商品投稿
-                    </Link>
-                    )}
-             </ul>
-         </nav>
-        ):(
-            <nav className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${className ?? ""}`}>
-            {/* ロゴ＋タイトル */}
-            <Link href="/" className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-blue-900">runnners-free</span>
-            </Link>
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const userRole =
+            (session.user.user_metadata?.role as Role | undefined) ?? null;
+          setRole(userRole);
+          setUser(session.user.email || "Login User");
+          dispatch(
+            signIn({
+              name: session.user.email,
+              iconUrl: "",
+              token: session.provider_token,
+            })
+          );
+          window.localStorage.setItem(
+            "oauth_provider_token",
+            session.provider_token || ""
+          );
+          window.localStorage.setItem(
+            "oauth_provider_refresh_token",
+            session.provider_refresh_token || ""
+          );
+        }
 
-            {/* メニュー */}
-            <ul className="hidden md:flex space-x-6 text-blue-900 font-bold">
-                <li><Link href="/postedIngo">商品一覧</Link></li>
-                <li><Link href="/myPage">マイページ</Link></li>
-                <li><Link href="/search" >商品検索</Link></li>
-                <li><Link href="/Login">ログイン</Link></li>
-            </ul>
-        </nav>
-        )}
-        </>
+        if (event === "SIGNED_OUT") {
+          window.localStorage.removeItem("oauth_provider_token");
+          window.localStorage.removeItem("oauth_provider_refresh_token");
+          setUser("");
+          setRole(null);
+          dispatch(signOut());
+        }
+      }
     );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [dispatch]);
+  return (
+    <>
+      {user ? (
+        <nav
+          className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${
+            className ?? ""
+          }`}
+        >
+          {/* ロゴ＋タイトル */}
+          <Link href="/" className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-blue-900">
+              runners-free
+            </span>
+          </Link>
+
+          {/* メニュー */}
+          <ul className="hidden md:flex space-x-6 text-blue-900 font-bold">
+            <li>
+              <Link href="/logout">ログアウト</Link>
+            </li>
+            <li>
+              <Link href="/postedInfo">商品一覧</Link>
+            </li>
+            <li>
+              <Link href="/myPage">マイページ</Link>
+            </li>
+            <li>
+              <Link href="/search">商品検索</Link>
+            </li>
+            {role === "admin" && (
+              <Link href="/post" className="mb-4" onClick={close}>
+                商品投稿
+              </Link>
+            )}
+          </ul>
+        </nav>
+      ) : (
+        <nav
+          className={`flex items-center justify-between border-b border-gray-200 px-4 py-2 ${
+            className ?? ""
+          }`}
+        >
+          {/* ロゴ＋タイトル */}
+          <Link href="/" className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-blue-900">
+              runnners-free
+            </span>
+          </Link>
+
+          {/* メニュー */}
+          <ul className="hidden md:flex space-x-6 text-blue-900 font-bold">
+            <li>
+              <Link href="/postedIngo">商品一覧</Link>
+            </li>
+            <li>
+              <Link href="/myPage">マイページ</Link>
+            </li>
+            <li>
+              <Link href="/search">商品検索</Link>
+            </li>
+            <li>
+              <Link href="/Login">ログイン</Link>
+            </li>
+          </ul>
+        </nav>
+      )}
+    </>
+  );
 }
