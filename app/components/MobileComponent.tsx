@@ -86,7 +86,7 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/logout" className="mb-4" onClick={close}>
                       ログアウト
                     </Link>
-                    <Link href="/private" className="mb-4" onClick={close}>
+                    <Link href="/postedInfo" className="mb-4" onClick={close}>
                       商品一覧
                     </Link>
                     <Link href="/myPage" className="mb-4" onClick={close}>
@@ -135,7 +135,7 @@ export default function MobileComponent({ className }: { className?: string }) {
                   </div>
 
                   <div className="px-4 pt-[78px] font-bold flex flex-col gap-4">
-                    <Link href="/private" className="mb-4" onClick={close}>
+                    <Link href="/postedInfo" className="mb-4" onClick={close}>
                       商品一覧
                     </Link>
                     <Link href="/myPage" className="mb-4" onClick={close}>
