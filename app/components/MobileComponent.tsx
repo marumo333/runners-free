@@ -16,12 +16,13 @@ export default function MobileComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
-  const [role,setRole] =useState<Role>(null)
+  const [role, setRole] = useState<Role>(null);
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
-          const userRole = (session.user.user_metadata?.role as Role | undefined) ?? null;
+          const userRole =
+            (session.user.user_metadata?.role as Role | undefined) ?? null;
           setRole(userRole);
           setUser(session.user.email || "Login User");
           dispatch(
@@ -29,7 +30,7 @@ export default function MobileComponent({ className }: { className?: string }) {
               name: session.user.email,
               iconUrl: "",
               token: session.provider_token,
-              role:userRole
+              role: userRole,
             })
           );
           window.localStorage.setItem(
@@ -102,10 +103,10 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/search" className="mb-4" onClick={close}>
                       商品検索
                     </Link>
-                    {role==="admin"&&(
+                    {role === "admin" && (
                       <Link href="/post" className="mb-4" onClick={close}>
-                      商品投稿
-                    </Link>
+                        商品投稿
+                      </Link>
                     )}
                   </div>
                 </Drawer>
