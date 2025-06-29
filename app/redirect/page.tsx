@@ -10,29 +10,24 @@ export default function Redirect() {
 
   useEffect(() => {
     (async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.replace("/Login");
         return;
       }
 
-      const { data: profile, error } = await supabase
+      // profile はトリガーで必ず存在する想定
+      const { data: profile } = await supabase
         .from("users")
         .select("role")
         .eq("id", session.user.id)
         .maybeSingle();
-      if (error || !profile) {
-        router.replace("/Login");
-        return;
-      }
 
-      if (profile.role === "admin") {
-        router.replace("/dashboard/admin");
-      } else {
-        router.replace("/dashboard/customer");
-      }
+      const role = profile?.role ?? "customer"; // 念のため fallback
+
+      router.replace(
+        role === "admin" ? "/dashboard/admin" : "/dashboard/customer"
+      );
     })();
   }, [router]);
 
