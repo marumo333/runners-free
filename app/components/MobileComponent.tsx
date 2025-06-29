@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
+type Role = "admin" | "customer" | null;
+
 export default function MobileComponent({ className }: { className?: string }) {
   const [opened, handlers] = useDisclosure(false);
   const { open, close, toggle } = handlers;
@@ -14,16 +16,20 @@ export default function MobileComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
+  const [role,setRole] =useState<Role>(null)
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         if (session?.user) {
+          const userRole = (session.user.user_metadata?.role as Role | undefined) ?? null;
+          setRole(userRole);
           setUser(session.user.email || "Login User");
           dispatch(
             signIn({
               name: session.user.email,
               iconUrl: "",
               token: session.provider_token,
+              role:userRole
             })
           );
           window.localStorage.setItem(
@@ -40,6 +46,7 @@ export default function MobileComponent({ className }: { className?: string }) {
           window.localStorage.removeItem("oauth_provider_token");
           window.localStorage.removeItem("oauth_provider_refresh_token");
           setUser("");
+          setRole(null);
           dispatch(signOut());
         }
       }
@@ -95,6 +102,11 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/search" className="mb-4" onClick={close}>
                       商品検索
                     </Link>
+                    {role==="admin"&&(
+                      <Link href="/post" className="mb-4" onClick={close}>
+                      商品投稿
+                    </Link>
+                    )}
                   </div>
                 </Drawer>
               </div>
