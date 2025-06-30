@@ -26,7 +26,11 @@ export default function Redirect() {
       const role = profile?.role ?? "customer"; // 念のため fallback
 
       router.replace(
-        role === "admin" ? "/dashboard/admin" : "/dashboard/customer"
+        role === "admin"
+          ? "/dashboard/admin"
+          : role === "staff"
+            ? "/dashboard/staff"
+            : "/dashboard/customer"
       );
     })();
   }, [router]);
