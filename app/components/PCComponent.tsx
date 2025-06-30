@@ -122,9 +122,6 @@ export default function PCComponent({ className }: { className?: string }) {
               <Link href="/postedIngo">商品一覧</Link>
             </li>
             <li>
-              <Link href="/myPage">マイページ</Link>
-            </li>
-            <li>
               <Link href="/search">商品検索</Link>
             </li>
             <li>
