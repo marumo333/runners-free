@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-type Role = "admin" | "customer"|"staff" | null;
+type Role = "admin" | "customer" | "staff" | null;
 
 export default function MobileComponent({ className }: { className?: string }) {
   const [opened, handlers] = useDisclosure(false);
@@ -103,38 +103,38 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/search" className="mb-4" onClick={close}>
                       商品検索
                     </Link>
-            {role === "admin" && (
-              <>
-                <li>
-                  <Link href="/post" className="mb-4" onClick={close}>
-                    商品投稿
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/dashboard/admin" onClick={close}>
-                    マイページ
-                  </Link>
-                </li>
-              </>
-            )}
-            {role === "customer" && (
-              <>
-                <li>
-                  <Link href="/dashboard/customer" onClick={close}>
-                    マイページ
-                  </Link>
-                </li>
-              </>
-            )}
-            {role === "staff" && (
-              <>
-                <li>
-                  <Link href="/dashboard/staff" onClick={close}>
-                    マイページ
-                  </Link>
-                </li>
-              </>
-            )}
+                    {role === "admin" && (
+                      <>
+                        <li>
+                          <Link href="/post" className="mb-4" onClick={close}>
+                            商品投稿
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="/dashboard/admin" onClick={close}>
+                            マイページ
+                          </Link>
+                        </li>
+                      </>
+                    )}
+                    {role === "customer" && (
+                      <>
+                        <li>
+                          <Link href="/dashboard/customer" onClick={close}>
+                            マイページ
+                          </Link>
+                        </li>
+                      </>
+                    )}
+                    {role === "staff" && (
+                      <>
+                        <li>
+                          <Link href="/dashboard/staff" onClick={close}>
+                            マイページ
+                          </Link>
+                        </li>
+                      </>
+                    )}
                   </div>
                 </Drawer>
               </div>
