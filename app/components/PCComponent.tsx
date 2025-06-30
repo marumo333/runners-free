@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { supabase } from "@/utils/supabase/supabaseClient";
 import { signIn, signOut } from "@/app/authSlice";
 
-type Role = "admin" | "customer" | null;
+type Role = "admin" | "customer"|"staff" | null;
 
 export default function PCComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
@@ -75,15 +75,33 @@ export default function PCComponent({ className }: { className?: string }) {
               <Link href="/postedInfo">商品一覧</Link>
             </li>
             <li>
-              <Link href="/myPage">マイページ</Link>
-            </li>
-            <li>
               <Link href="/search">商品検索</Link>
             </li>
             {role === "admin" && (
-              <Link href="/post" className="mb-4" onClick={close}>
+              <>
+              <li>
+              <Link href="/post" >
                 商品投稿
               </Link>
+              </li>
+              <li>
+                  <Link href="/dashboard/admin">マイページ</Link>
+              </li>
+              </>
+            )}
+            {role === "customer" && (
+              <>
+              <li>
+                  <Link href="/dashboard/customer">マイページ</Link>
+              </li>
+              </>
+            )}
+            {role === "staff" && (
+              <>
+              <li>
+                  <Link href="/dashboard/staff">マイページ</Link>
+              </li>
+              </>
             )}
           </ul>
         </nav>
