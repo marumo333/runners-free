@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"admin" | "customer">("customer");
+  const [role, setRole] = useState<"admin" | "customer" | "staff">("customer");
   const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -99,9 +99,10 @@ export default function Register() {
             <select
               id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value as "admin" | "customer")}
+              onChange={(e) => setRole(e.target.value as "admin" | "customer" | "staff")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
+              <option value="staff">管理者</option>
               <option value="admin">フリーランス</option>
               <option value="customer">お客様</option>
             </select>
@@ -118,7 +119,7 @@ export default function Register() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           既にアカウントをお持ちですか？{" "}
-          <a href="/login" className="text-indigo-600 hover:text-indigo-800">
+          <a href="/Login" className="text-indigo-600 hover:text-indigo-800">
             ログイン
           </a>
         </p>
