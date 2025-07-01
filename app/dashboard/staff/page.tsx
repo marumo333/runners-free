@@ -33,6 +33,7 @@ export default function ReviewManagerPage() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getSession();
+      console.log("isStaff JWT:", data.session?.user?.user_metadata?.isStaff);
       const isStaff = data.session?.user?.user_metadata?.isStaff;
       if (!isStaff) {
         router.replace("/");          // staff 以外リダイレクト
