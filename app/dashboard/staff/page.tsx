@@ -63,6 +63,7 @@ useEffect(() => {
   /* 4. Realtime 購読*/
   useEffect(() => {
     if(!setSessionChecked)return;
+    if(!sessionChecked||!mutate) return;
     const channel = supabase
       .channel("reviews")
       .on(
