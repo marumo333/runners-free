@@ -30,23 +30,34 @@ export default function ReviewManagerPage() {
   /* 2. スタッフ判定（JWT の isStaff 参照）*/
   const [sessionChecked, setSessionChecked] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log("isStaff JWT:", data.session?.user?.user_metadata?.isStaff);
-      const isStaff = data.session?.user?.user_metadata?.isStaff;
-      if (!isStaff) {
-        router.replace("/");          // staff 以外リダイレクト
-        return;
-      }
-      setSessionChecked(true);        // OK なら表示許可
-    })();
-  }, [router]);
+  /* 2. スタッフ判定（DB 直読みに変更） */
+useEffect(() => {
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { router.replace("/Login"); return; }
 
-  if (!sessionChecked) return null;    // 判定完了まで何も描画しない
+    const { data: profile, error } = await supabase
+      .from("users")          // is_staff が入っているテーブル
+      .select("role")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (error || !profile?.role) {
+      if(error||profile?.role!=="staff"){
+      router.replace("/");            // staff 以外
+      return;
+      }
+    }
+    setSessionChecked(true);
+  })();
+}, [router]);
+
 
   /*  3. SWR で一覧取得 */
-  const { data, error, mutate } = useSWR<Row[]>("/review-manager", fetcher);
+  if(!sessionChecked)return<p>スタッフかどうか確認中</p>
+  const { data, error, mutate } = useSWR<Row[]>( sessionChecked ? "/review-manager":null, fetcher);  
+
+
 
   /* 4. Realtime 購読*/
   useEffect(() => {
