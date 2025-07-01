@@ -54,13 +54,15 @@ useEffect(() => {
 
 
   /*  3. SWR で一覧取得 */
-  if(!sessionChecked)return<p>スタッフかどうか確認中</p>
-  const { data, error, mutate } = useSWR<Row[]>( sessionChecked ? "/review-manager":null, fetcher);  
+  const swrKey = sessionChecked ? "/review-manager":null;
+  const {data,error,mutate} = useSWR(swrKey,fetcher);
+  
 
 
 
   /* 4. Realtime 購読*/
   useEffect(() => {
+    if(!setSessionChecked)return;
     const channel = supabase
       .channel("reviews")
       .on(
@@ -71,7 +73,7 @@ useEffect(() => {
       .subscribe();
 
     return () => void supabase.removeChannel(channel);
-  }, [mutate]);
+  }, [sessionChecked,mutate]);
 
   /* 5. ステータス更新*/
   const updateStatus = async (row: Row, status: Row["status"]) => {
@@ -82,6 +84,7 @@ useEffect(() => {
     if (error) return alert(error.message);
     mutate();                          // 即リフレッシュ
   };
+
 
   /*  6. UI*/
   if (error) return <p className="text-red-600">読み込み失敗: {error.message}</p>;
