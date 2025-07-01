@@ -13,14 +13,16 @@ export async function POST(req: Request) {
     if (typeof password !== "string" || password.length < 8) {
       return NextResponse.json({ error: "パスワードは8文字以上で入力してください。" }, { status: 400 });
     }
-    if (!["admin", "customer"].includes(role)) {
+    if (!["admin", "customer","staff"].includes(role)) {
       return NextResponse.json({ error: "無効なユーザー種別です。" }, { status: 400 });
     }
 
     // 2) サインアップ or ユーザー作成を振り分け
     let user: any;
     let createError: any;
-
+    if (role === "staff" && email !== "marumonmon77@gmail.com") {
+  return NextResponse.json({ error: "staff 権限で登録できるのは運営者のみです。" }, { status: 403 });
+}
     if (role === "customer") {
       // customer は signUp を使う（確認メール送信フローなど）
       const { data: signUpData, error: signUpError } = await supabaseAdmin.auth.signUp({
