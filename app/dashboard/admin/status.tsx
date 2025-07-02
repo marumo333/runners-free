@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 type ReviewStatus = "pending" | "approved" | "rejected";
 
@@ -9,6 +9,7 @@ export default function Status() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [status, setStatus] = useState<ReviewStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createClientComponentClient();
 
   // ユーザーとステータス取得
   useEffect(() => {
