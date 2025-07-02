@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabaseClient";
 import Link from "next/link";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface ImageItem {
   id: string;
@@ -18,6 +18,8 @@ interface ImageItem {
 export default function ShopImage() {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const supabase = createClientComponentClient();
 
   const fetchImages = async () => {
     setLoading(true);
