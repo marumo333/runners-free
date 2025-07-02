@@ -1,9 +1,11 @@
 // app/api/review/status/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { NextResponse } from "next/server";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies, headers } from "next/headers";
 
 export async function GET() {
-  const user = (await supabase.auth.getUser()).data.user;
+  const supabase = createRouteHandlerClient({ cookies: async () => cookies() })
+  const {data:{user},} = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data, error } = await supabase
