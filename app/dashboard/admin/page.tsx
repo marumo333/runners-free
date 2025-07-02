@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabaseClient";
+import Status from "./status"
 
 type AvatarData = {
   id: string;
@@ -117,6 +118,7 @@ export default function Admin() {
         <h1 className="text-3xl font-bold mb-6 text-center text-indigo-600">
           フリーランス管理画面
         </h1>
+        <Status/>
         <p className="text-sm text-gray-600 mb-8">
           ログインユーザー：<span className="font-medium">{user.email}</span>（{user.role}）
         </p>
