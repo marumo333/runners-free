@@ -3,9 +3,10 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Redirect() {
+  const supabase =createClientComponentClient();
   const router = useRouter();
 
   useEffect(() => {
