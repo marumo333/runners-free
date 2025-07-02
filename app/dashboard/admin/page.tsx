@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabaseClient";
-import Status from "./status"
+import Status from "./status";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 type AvatarData = {
   id: string;
@@ -17,11 +17,11 @@ type AvatarData = {
 export default function Admin() {
   const [user, setUser]       = useState<{ id: string; email: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [username, setUsername] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [profile, setProfile] = useState<AvatarData | null>(null);
 
+  const supabase =createClientComponentClient();
   // 初期化：ログインユーザーと既存プロフィール取得
   useEffect(() => {
     (async () => {
