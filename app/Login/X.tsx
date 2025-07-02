@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import "../globals.css";
 import { signOut, signIn } from "../authSlice";
 import {  useDispatch } from "react-redux";
@@ -17,6 +17,8 @@ export default function X({className}:XProps) {
   const [user, setUser] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const router = useRouter();
+
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { signIn, signOut } from "@/app/authSlice";
 
 type Role = "admin" | "customer" | "staff" | null;
@@ -10,6 +10,8 @@ type Role = "admin" | "customer" | "staff" | null;
 export default function PCComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
   const [role, setRole] = useState<Role>(null);
+
+ const supabase = createClientComponentClient(); 
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
   useEffect(() => {

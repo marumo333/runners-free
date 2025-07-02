@@ -1,6 +1,5 @@
 "use client";
-import { supabase } from "@/utils/supabase/supabaseClient";
-import "../globals.css";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { signOut, signIn } from "../authSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
@@ -17,6 +16,8 @@ export default function Google({className}:GoogleProps) {
   const [user, setUser] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const router = useRouter();
+
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(

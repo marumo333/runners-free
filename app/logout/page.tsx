@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { signOut, signIn } from "../authSlice";
 
 export default function Logout() {
@@ -10,6 +10,8 @@ export default function Logout() {
   const dispatch = useDispatch();
   const [user, setUser] = useState<string | null | undefined>(undefined);
   const router = useRouter();
+
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(

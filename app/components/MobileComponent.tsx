@@ -1,6 +1,6 @@
 "use client";
 import { signIn, signOut } from "@/app/authSlice";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Burger, Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
@@ -14,6 +14,8 @@ export default function MobileComponent({ className }: { className?: string }) {
   const { open, close, toggle } = handlers;
 
   const dispatch = useDispatch();
+
+  const supabase = createClientComponentClient();
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
   const [role, setRole] = useState<Role>(null);
