@@ -1,5 +1,5 @@
 "use client"
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React from "react";
 import {useEffect,useState} from "react";
 
@@ -16,6 +16,7 @@ export default function Customer(){
     const [user,setUser] = useState<{ id: string; email: string; role?: string }|null>(null);
     const [loading,setLoading] = useState(true);
 
+    const supabase = createClientComponentClient();
     // フォーム入力用
   const [username, setUsername] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
