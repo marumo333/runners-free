@@ -3,38 +3,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "customer" | "staff">("customer");
+  const supabase = createClientComponentClient();
   const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // ペイロードをトリムして整形
-    const payload = {
+    const {data,error} = await supabase.auth.signUp( {
       email: email.trim(),
       password: password.trim(),
-      role,
-    };
-    console.log("Register payload:", payload);
-
-    // API 呼び出し
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      options:{data:{role}}
     });
-
-    // ステータスコードで判定
-    if (!res.ok) {
-      const err = await res.json();
-      console.error("Register failed:", err);
-      alert(err.error || err.message || "登録に失敗しました");
+    if (error) {
+      console.error("Register error:", error);
+      alert(error.message);
       return;
     }
+
+    // ❷ クッキーにセッションが保存される → そのままリダイレクト
+    router.replace("/dashboard/admin");
 
     // 成功時
     console.log("Register succeeded");
