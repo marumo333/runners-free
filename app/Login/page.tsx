@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/utils/supabase/supabaseClient";
 import { useDispatch } from "react-redux";
 import { signIn} from "../authSlice";
 import { useRouter } from "next/navigation";
@@ -10,11 +9,13 @@ import Link from "next/link";
 import Google from "./google";
 import Github from "./github";
 import X from "./X";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  const supabase = createClientComponentClient();
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
