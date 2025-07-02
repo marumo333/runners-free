@@ -27,9 +27,6 @@ export default function Register() {
       return;
     }
 
-    // ❷ クッキーにセッションが保存される → そのままリダイレクト
-    router.replace("/dashboard/admin");
-
     // 成功時
     console.log("Register succeeded");
     // ページ名は小文字 /login
