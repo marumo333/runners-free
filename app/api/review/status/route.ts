@@ -4,7 +4,8 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
 export async function GET() {
-  const supabase = createRouteHandlerClient({ cookies: async () => cookies() });
+  
+  const supabase = createRouteHandlerClient({ cookies});
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -19,7 +20,9 @@ export async function GET() {
     .limit(1)
     .maybeSingle();
 
-  if (error)
+  if (error){
+    console.error("[status] fetch error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
   return NextResponse.json({ status: data?.status ?? null });
 }
