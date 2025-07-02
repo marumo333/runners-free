@@ -26,7 +26,14 @@ export default function SignInPage() {
       alert(signInError.message);
       return;
     }
-
+    // ここでセッション確定を待つ
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+  if (sessionError || !sessionData.session) {
+    console.error("Session fetch error:", sessionError);
+    alert("ログインに失敗しました。もう一度お試しください。");
+    return;
+  }
     // Redux 登録
     dispatch(
       signIn({
@@ -36,8 +43,9 @@ export default function SignInPage() {
       })
     );
 
-    // /redirect へ移動
+    setTimeout(() => {
     router.replace("/redirect");
+    }, 50);
   };
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
