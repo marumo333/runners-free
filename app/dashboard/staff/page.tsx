@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useSWR from "swr";
-import { supabase } from "@/utils/supabase/supabaseClient";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 type Row = {
   id: string;
@@ -12,6 +12,8 @@ type Row = {
   status: "pending" | "approved" | "rejected";
   submitted_at: string | null;
 };
+
+const supabase = createClientComponentClient();
 
 /* 1. データ取得用 fetcher ― key を受け取る形に統一 */
 const fetcher = async (_key: string): Promise<Row[]> => {
