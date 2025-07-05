@@ -3,7 +3,7 @@
 import { Translator } from '@/libs/deepl'
 import { DeeplLanguages } from 'deepl'
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/supabase";
+import { supabase } from "@/utils/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
 import { useSelector } from "react-redux";
 import LikeSection from "./likeSection"
