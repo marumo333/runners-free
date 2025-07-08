@@ -2,6 +2,7 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React from "react";
 import {useEffect,useState} from "react";
+import Like from "./likes";
 
 type AvatarData ={
     id: string;
@@ -157,6 +158,7 @@ export default function Customer(){
           />
         </div>
       )}
+      <Like userId={user.id} />
     </div>
   );
 }
