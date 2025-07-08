@@ -1,7 +1,9 @@
 "use client";
 
 import { Translator } from '@/libs/deepl'
-import { DeeplLanguages } from 'deepl'
+// import { DeeplLanguages } from 'deepl'
+
+type DeeplLanguages = 'EN-US' | 'JA' | 'FR' | 'DE' | 'ZH' | string;
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
