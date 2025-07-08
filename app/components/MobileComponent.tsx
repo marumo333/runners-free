@@ -99,9 +99,6 @@ export default function MobileComponent({ className }: { className?: string }) {
                     <Link href="/postedInfo" className="mb-4" onClick={close}>
                       商品一覧
                     </Link>
-                    <Link href="/myPage" className="mb-4" onClick={close}>
-                      マイページ
-                    </Link>
                     <Link href="/search" className="mb-4" onClick={close}>
                       商品検索
                     </Link>
