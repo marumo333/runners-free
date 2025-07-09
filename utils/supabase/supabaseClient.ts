@@ -1,9 +1,15 @@
-// supabaseClient.ts
-import { createClient } from "@supabase/supabase-js";
+// utils/supabase/supabaseClient.ts
+"use client";
 
-// SupabaseのURLとAPIキーを環境変数から取得
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import type { Database } from "@/libs/database.types";
 
-// **1回だけ作成するシングルトンインスタンス**
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY,);
+// globalThis にキャッシュして一度だけ生成
+declare global {
+  var __supabase_client: ReturnType<typeof createClientComponentClient<Database>> | undefined;
+}
+
+export const supabase =
+  globalThis.__supabase_client ??
+  (globalThis.__supabase_client = createClientComponentClient<Database>());
+
