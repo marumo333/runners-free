@@ -93,7 +93,6 @@ export default function Register() {
               onChange={(e) => setRole(e.target.value as "admin" | "customer" | "staff")}
               className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="staff">管理者</option>
               <option value="admin">フリーランス</option>
               <option value="customer">お客様</option>
             </select>
