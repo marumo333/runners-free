@@ -1,4 +1,5 @@
 // app/cart/page.tsx
+"use client"
 import { Button, Card } from '@mantine/core';
 import type { NextPage } from 'next';
 import Image from 'next/image';
