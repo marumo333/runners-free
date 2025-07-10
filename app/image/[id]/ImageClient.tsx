@@ -1,13 +1,13 @@
 "use client";
 
 import { Translator } from '@/libs/deepl'
-// import { DeeplLanguages } from 'deepl'
 
 type DeeplLanguages = 'EN-US' | 'JA' | 'FR' | 'DE' | 'ZH' | string;
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabaseClient";
 import { useRouter } from 'next/navigation';
 import LikeSection from "./likeSection"
+import { useCart } from '@/app/hooks/useCart';
 
 
 
@@ -27,6 +27,7 @@ export default function ImageClient({ id }: { id: string }) {
   const [translate, setTranslate] = useState<string>("");
   const router = useRouter();
 
+  const { addCart} = useCart();
   const fetchImage = async (imageId: string) => {
     setLoading(true);
     const { data, error } = await supabase
@@ -142,7 +143,24 @@ export default function ImageClient({ id }: { id: string }) {
         <button onClick={handleBack} className="btn-secondary">
           戻る
         </button>
-        <button onClick={} className="btn-warning">
+        <button
+          onClick={() =>
+            addCart({
+              id: imageDetail.id,
+              user_id: userId,
+              image_url: imageDetail.url,
+              name: imageDetail.name ?? null,
+              url: imageDetail.url,
+              jan: imageDetail.jan ?? null,
+              content: imageDetail.content ?? null,
+              tag: null,
+              stock: null,
+              price: imageDetail.price ?? null,
+              created_at: new Date().toISOString(),
+            })
+          }
+          className="btn-warning"
+        >
           カートに追加
         </button>
 
