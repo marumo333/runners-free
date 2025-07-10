@@ -6,12 +6,17 @@ import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
+import { useCart } from "../hooks/useCart";
 
 type Role = "admin" | "customer" | "staff" | null;
 
 export default function MobileComponent({ className }: { className?: string }) {
   const [opened, handlers] = useDisclosure(false);
   const { open, close, toggle } = handlers;
+  const router = useRouter();
+  
+    const { totalQuantity } = useCart();
 
   const dispatch = useDispatch();
 
@@ -122,7 +127,13 @@ export default function MobileComponent({ className }: { className?: string }) {
                           <Link href="/dashboard/customer" onClick={close}>
                             マイページ
                           </Link>
-                        </li>
+                          </li>
+                          <li>
+                          <button onClick={() => router.push("/cart")}>
+              Cart ({totalQuantity})
+            </button>
+            </li>
+                        
                       </>
                     )}
                     {role === "staff" && (
