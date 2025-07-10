@@ -19,7 +19,7 @@ const Cart: NextPage = () => {
           <Card key={item.id} shadow="md" className="w-80">
             {/* 商品名*/}
             <div className="flex justify-between items-end">
-              <h4>{item.name ?? '（無題）'}</h4>
+              <h4>{item.name ?? '商品名'}</h4>
               <div className="text-sm">{item.user_id}</div>
             </div>
 
@@ -37,11 +37,6 @@ const Cart: NextPage = () => {
                 style={{ objectFit: 'contain' }}
               />
             </div>
-
-            {/* 説明 */}
-            <p className="text-sm min-h-[60px]">
-              {item.content ?? '（説明なし）'}
-            </p>
 
             {/* 数量操作 */}
             <div className="flex justify-center items-center gap-4">
