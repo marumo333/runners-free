@@ -15,8 +15,9 @@ export default function MobileComponent({ className }: { className?: string }) {
   const [opened, handlers] = useDisclosure(false);
   const { open, close, toggle } = handlers;
   const router = useRouter();
-  
-    const { totalQuantity } = useCart();
+
+  const { cart } = useCart();
+  const totalQuantity = cart.length;
 
   const dispatch = useDispatch();
 
@@ -127,13 +128,12 @@ export default function MobileComponent({ className }: { className?: string }) {
                           <Link href="/dashboard/customer" onClick={close}>
                             マイページ
                           </Link>
-                          </li>
-                          <li>
+                        </li>
+                        <li>
                           <button onClick={() => router.push("/cart")}>
-              Cart ({totalQuantity})
-            </button>
-            </li>
-                        
+                            Cart ({totalQuantity})
+                          </button>
+                        </li>
                       </>
                     )}
                     {role === "staff" && (

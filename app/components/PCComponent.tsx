@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { signIn, signOut } from "@/app/authSlice";
 import { useRouter } from "next/navigation";
@@ -14,9 +14,10 @@ export default function PCComponent({ className }: { className?: string }) {
   const [role, setRole] = useState<Role>(null);
   const router = useRouter();
 
-  const { totalQuantity } = useCart();
+  const { cart } = useCart();
+  const totalQuantity = cart.length;
 
- const supabase = createClientComponentClient(); 
+  const supabase = createClientComponentClient();
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
   useEffect(() => {
@@ -100,8 +101,8 @@ export default function PCComponent({ className }: { className?: string }) {
                   <Link href="/dashboard/customer">マイページ</Link>
                 </li>
                 <button onClick={() => router.push("/cart")}>
-              Cart ({totalQuantity})
-            </button>
+                  Cart ({totalQuantity})
+                </button>
               </>
             )}
             {role === "staff" && (
