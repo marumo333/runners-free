@@ -18,11 +18,11 @@ export interface Database {
           image_url: string;
           name: string | null;
           url: string;
-          jan: string | null;
+          jan: number | null;
           content: string | null;
           tag: string | null;
-          stock: string | null;
-          price: string | null;
+          stock: number | null;
+          price: number | null;
           created_at: string;
         };
         Insert: {
@@ -31,11 +31,11 @@ export interface Database {
           image_url: string;
           name?: string | null;
           url: string;
-          jan?: string | null;
+          jan?: number | null;
           content?: string | null;
           tag?: string | null;
-          stock?: string | null;
-          price?: string | null;
+          stock?: number | null;
+          price?: number | null;
           created_at?: string;
         };
         Update: {
@@ -44,11 +44,11 @@ export interface Database {
           image_url?: string;
           name?: string | null;
           url?: string;
-          jan?: string | null;
+          jan?: number | null;
           content?: string | null;
           tag?: string | null;
-          stock?: string | null;
-          price?: string | null;
+          stock?: number | null;
+          price?: number | null;
           created_at?: string;
         };
       };
