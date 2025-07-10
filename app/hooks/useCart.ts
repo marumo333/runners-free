@@ -1,58 +1,38 @@
-// app/hooks/useCart.ts
+// hooks/useCart.ts
+import { useState } from 'react';
+import type { CartItem, ShopPost } from '../types/cart';
 
-import cookie from 'js-cookie';
-import { useState, useEffect } from 'react';
-import { BookWithAuthor, CartItem } from './type';
+export function useCart() {
+  const [cart, setCart] = useState<CartItem[]>([]);
 
-export const useCart = () => {
-  const currentCartJson = cookie.get('cart') || '[]';
-  const [cart, setCart] = useState<CartItem[]>(JSON.parse(currentCartJson));
-  const cartItemIds = cart.map((item) => item.id);
-  const totalQuantity = cart.reduce((acc, cur) => acc + cur.quantity, 0);
-
-  /* カートへ追加 */
-  const addCart = (addedItem: BookWithAuthor) => {
-    if (cartItemIds.includes(addedItem.id)) {
-      const newCart = cart.map((item) => {
-        if (item.id === addedItem.id) {
-          return {
-            ...item,
-            quantity: item.quantity + 1,
-          };
-        }
-        return item;
-      });
-      setCart(newCart);
-    } else {
-      setCart([...cart, { ...addedItem, quantity: 1 }]);
-    }
+  const addCart = (post: ShopPost) => {
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.id === post.id);
+      if (idx !== -1) {
+        // 既存アイテム：quantity をインクリメント
+        const next = [...prev];
+        next[idx].quantity += 1;
+        return next;
+      }
+      // 新規アイテム：quantity 1 で追加
+      return [...prev, { ...post, quantity: 1 }];
+    });
   };
 
-  /* カートから削除 */
-  const removeCart = (removedItem: BookWithAuthor) => {
-    if (!cartItemIds.includes(removedItem.id)) return;
-    const newCart = cart
-      .map((item) => {
-        if (item.id === removedItem.id) {
-          return {
-            ...item,
-            quantity: item.quantity - 1,
-          };
-        }
-        return item;
-      })
-      .filter((item) => item.quantity);
-    setCart(newCart);
+  const removeCart = (post: ShopPost) => {
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.id === post.id);
+      if (idx === -1) return prev;
+      const next = [...prev];
+      if (next[idx].quantity > 1) {
+        next[idx].quantity -= 1;
+        return next;
+      }
+      // quantity が 1 → 配列から削除
+      next.splice(idx, 1);
+      return next;
+    });
   };
 
-  useEffect(() => {
-    cookie.set('cart', JSON.stringify(cart), { expires: 1 });
-  }, [cart]);
-
-  return {
-    cart,
-    addCart,
-    removeCart,
-    totalQuantity,
-  };
-};
+  return { cart, addCart, removeCart };
+}
