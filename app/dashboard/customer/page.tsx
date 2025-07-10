@@ -44,14 +44,19 @@ export default function Customer(){
         .from("avatars")
         .select("*")
         .eq("user_id", u.id)
-        .single();
+        .maybeSingle();
 
       if (avatarError) {
         console.warn("プロフィール未作成／フェッチ失敗", avatarError);
-      } else {
-        setProfile(avatarData);
-        setUsername(avatarData.username);
-      }
+      } else if (avatarData) {
+   // レコードが返ってきたときだけセット
+   setProfile(avatarData);
+   setUsername(avatarData.username);
+ } else {
+   // レコードなし（初回）の場合は空で初期化
+   setProfile(null);
+   setUsername("");
+ }
 
       setLoading(false);
     };
@@ -114,7 +119,7 @@ export default function Customer(){
       .from("avatars")
       .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
     setProfile(newProfile ?? null);
     alert("プロフィールを更新しました！");
   };
