@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { signIn, signOut } from "@/app/authSlice";
@@ -100,9 +101,62 @@ export default function PCComponent({ className }: { className?: string }) {
                 <li>
                   <Link href="/dashboard/customer">マイページ</Link>
                 </li>
-                <button onClick={() => router.push("/cart")}>
-                  Cart ({totalQuantity})
-                </button>
+                {/* カートアイコン＋バッジ＋プレビューポップアップ */}
+                <li className="relative group">
+                  <Link
+                    href="/cart"
+                    className="flex items-center p-2 hover:bg-gray-100 rounded-full"
+                    aria-label={`カートに ${totalQuantity} 件の商品があります`}
+                  >
+                    <Image
+                      src="/ECcart.png.webp"
+                      alt="Cart"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8"
+                    />
+                    {totalQuantity > 0 && (
+                      <span
+                        className="
+                          absolute -top-1 -right-1 flex h-5 w-5
+                          items-center justify-center
+                          rounded-full bg-red-500 text-xs text-white
+                          animate-ping
+                        "
+                      >
+                        {totalQuantity}
+                      </span>
+                    )}
+                  </Link>
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute right-0 top-full mt-2 w-48
+                      opacity-0 group-hover:opacity-100
+                      transition-opacity bg-white border border-gray-200
+                      shadow-lg rounded-md p-3 text-sm z-10
+                    "
+                  >
+                    {totalQuantity > 0 ? (
+                      <ul className="space-y-1 max-h-40 overflow-y-auto">
+                        {cart.map((item) => (
+                          <li key={item.id} className="flex justify-between">
+                            <span className="truncate">{item.name}</span>
+                            <span className="font-bold">×{item.quantity}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-500">カートは空です</p>
+                    )}
+                    <Link
+                      href="/cart"
+                      className="mt-2 block text-center text-blue-600 hover:underline"
+                    >
+                      カートを見る
+                    </Link>
+                  </div>
+                </li>
               </>
             )}
             {role === "staff" && (
