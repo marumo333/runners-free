@@ -1,4 +1,4 @@
-// lib/database.types.ts
+// libs/database.types.ts
 
 export type Json =
   | string
