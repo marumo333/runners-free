@@ -1,3 +1,4 @@
+// app/components/ShopImage.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 interface ImageItem {
   id: string;
+  user_id: string;
   name: string;
   url: string;
   jan: number;
@@ -13,42 +15,43 @@ interface ImageItem {
   tag: string;
   stock: number;
   price: number;
+  status: "pending" | "approved" | "rejected";
 }
 
 export default function ShopImage() {
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loading, setLoading] = useState(false);
-
   const supabase = createClientComponentClient();
 
-  const fetchImages = async () => {
-    setLoading(true);
-    const { data, error } = await supabase.from("shopposts").select("*");
-
-    if (error) {
-      console.error("画像取得エラー:", error);
-      setLoading(false);
-      return;
-    }
-
-    const formattedData = (data || []).map((item: any) => ({
-      id: item.id,
-      name: item.name,
-      url: item.image_url,
-      jan: item.jan,
-      content: item.content,
-      tag: item.tag,
-      stock: item.stock,
-      price: item.price,
-    }));
-
-    setImages(formattedData);
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchImages();
-  }, []);
+    (async () => {
+      setLoading(true);
+      // ビューから直接 status を含めて取得
+      const { data, error } = await supabase
+        .from("shopposts_with_status")
+        .select("*");
+
+      if (error) {
+        console.error("投稿取得エラー:", error);
+      } else {
+        setImages(
+          (data || []).map((item: any) => ({
+            id: item.id,
+            user_id: item.user_id,
+            name: item.name,
+            url: item.image_url,
+            jan: Number(item.jan),
+            content: item.content,
+            tag: item.tag,
+            stock: Number(item.stock),
+            price: Number(item.price),
+            status: item.status,
+          }))
+        );
+      }
+      setLoading(false);
+    })();
+  }, [supabase]);
 
   return (
     <>
@@ -57,13 +60,30 @@ export default function ShopImage() {
           <div className="animate-spin h-10 w-10 border-4 border-blue-500 rounded-full border-t-transparent"></div>
         </div>
       )}
-
       <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         {images.map((item) => (
           <li
             key={item.id}
             className="group relative bg-white rounded-md shadow p-2"
           >
+            <span
+              className={`
+                absolute top-2 left-2 px-2 py-1 text-xs font-semibold rounded 
+                ${
+                  item.status === "approved"
+                    ? "bg-green-100 text-green-800"
+                    : item.status === "rejected"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-yellow-100 text-yellow-800"
+                }
+              `}
+            >
+              {item.status === "approved"
+                ? "承認済"
+                : item.status === "rejected"
+                ? "却下"
+                : "審査中"}
+            </span>
             <Link href={`/image/${item.id}`} className="block">
               <img
                 src={item.url}
