@@ -165,7 +165,7 @@ export default function Page() {
                     className="
                   animate-spin
                   rounded-full
-                  w-6 h-6
+                  w-10 h-10
                   border-4 border-t-blue-200 border-gray-200
                 "
                   />
