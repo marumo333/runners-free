@@ -16,6 +16,7 @@ export default function Page() {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false); //送信中のcss
 
   const [user, setUser] = useState<string | null | undefined>(undefined);
   useEffect(() => {
@@ -61,6 +62,7 @@ export default function Page() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setStatus(null);
 
     if (!file || !file.type.match("image.*")) {
@@ -96,27 +98,26 @@ export default function Page() {
 
     const publicUrl = publicUrlData.publicUrl;
 
-    const { error: insertError } = await supabase
-      .from("shopposts")
-      .insert([
-        {
-          name,
-          image_url: publicUrl,
-          url: publicUrl,
-          jan,
-          content,
-          tag,
-          stock,
-          price,
-          user_id: userData.user.id
-        },
-      ]);
+    const { error: insertError } = await supabase.from("shopposts").insert([
+      {
+        name,
+        image_url: publicUrl,
+        url: publicUrl,
+        jan,
+        content,
+        tag,
+        stock,
+        price,
+        user_id: userData.user.id,
+      },
+    ]);
 
     if (insertError) {
       alert("登録失敗: " + insertError.message);
       return;
     }
 
+    setIsSubmitting(false);
     setFile(null);
     setStatus("アップロードが完了しました！");
   };
@@ -158,7 +159,19 @@ export default function Page() {
                 disabled={!file}
                 className="bg-blue-700 text-white py-2 px-5 rounded disabled:opacity-50"
               >
-                送信
+                {isSubmitting ? (
+                  // Tailwind のユーティリティだけでスピナーを
+                  <div
+                    className="
+                  animate-spin
+                  rounded-full
+                  w-6 h-6
+                  border-4 border-t-blue-200 border-gray-200
+                "
+                  />
+                ) : (
+                  "送信"
+                )}
               </button>
             </form>
 
