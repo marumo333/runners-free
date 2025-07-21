@@ -71,7 +71,11 @@ export default function Page() {
 
         const { error: uploadError } = await supabase.storage
             .from("shopposts")
-            .upload(filePath, file);
+            .upload(filePath, file, {
+    cacheControl: "3600",
+    upsert:    true,
+    contentType: file.type,  // ex: "image/jpeg"
+  });
 
         if (uploadError) {
             alert("アップロード失敗: " + uploadError.message);
