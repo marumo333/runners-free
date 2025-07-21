@@ -108,6 +108,7 @@ export default function Page() {
           tag,
           stock,
           price,
+          user_id: userData.user.id
         },
       ]);
 
