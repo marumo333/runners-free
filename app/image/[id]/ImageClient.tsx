@@ -101,13 +101,19 @@ export default function ImageClient({ id }: { id: string }) {
     );
   }
 
+  // 汎用ボタンユーティリティ
+  const baseBtn = "px-4 py-2 rounded-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition";
+  const successBtn = `${baseBtn} bg-green-500 text-white hover:bg-green-600 focus:ring-green-300`;
+  const secondaryBtn = `${baseBtn} bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300`;
+  const warningBtn = `${baseBtn} bg-yellow-400 text-black hover:bg-yellow-500 focus:ring-yellow-300`;
+
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-lg space-y-8">
       {/* 翻訳 */}
       <div className="space-y-2">
         <button
           onClick={() => clickTranslate('EN-US')}
-          className="btn-success"
+          className={successBtn}
         >
           Translate to English
         </button>
@@ -116,6 +122,7 @@ export default function ImageClient({ id }: { id: string }) {
           {translate || "ここに翻訳結果が表示されます"}
         </div>
       </div>
+
       {/* タイトル */}
       <h1 className="text-3xl font-bold text-blue-800 border-b pb-2">
         商品名: {imageDetail.name}
@@ -138,9 +145,9 @@ export default function ImageClient({ id }: { id: string }) {
         />
       </div>
 
-      {/* ボタン */}
+      {/* アクションボタン */}
       <div className="flex flex-wrap justify-center gap-4">
-        <button onClick={handleBack} className="btn-secondary">
+        <button onClick={handleBack} className={secondaryBtn}>
           戻る
         </button>
         <button
@@ -159,19 +166,18 @@ export default function ImageClient({ id }: { id: string }) {
               created_at: new Date().toISOString(),
             })
           }
-          className="btn-warning"
+          className={warningBtn}
         >
           カートに追加
         </button>
-
       </div>
-      {/*Likeボタン*/}
+
+      {/* Like ボタン */}
       <LikeSection imageId={imageDetail.id} userId={userId} />
     </div>
   );
 }
 
-// コンポーネント：項目
 function Item({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="text-lg">
