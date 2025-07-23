@@ -1,15 +1,13 @@
 "use client";
 
-import { Translator } from '@/libs/deepl'
+import { Translator } from "@/libs/deepl";
 
-type DeeplLanguages = 'EN-US' | 'JA' | 'FR' | 'DE' | 'ZH' | string;
+type DeeplLanguages = "EN-US" | "JA" | "FR" | "DE" | "ZH" | string;
 import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabaseClient";
-import { useRouter } from 'next/navigation';
-import LikeSection from "./likeSection"
-import { useCart } from '@/app/hooks/useCart';
-
-
+import { useRouter } from "next/navigation";
+import LikeSection from "./likeSection";
+import { useCart } from "@/app/hooks/useCart";
 
 interface ImageItem {
   id: string;
@@ -27,7 +25,7 @@ export default function ImageClient({ id }: { id: string }) {
   const [translate, setTranslate] = useState<string>("");
   const router = useRouter();
 
-  const { addCart} = useCart();
+  const { addCart } = useCart();
   const fetchImage = async (imageId: string) => {
     setLoading(true);
     const { data, error } = await supabase
@@ -69,16 +67,9 @@ export default function ImageClient({ id }: { id: string }) {
     });
   }
 
-
-
-
-
-
   const handleBack = () => {
     router.back();
   };
-
-
 
   useEffect(() => {
     fetchImage(id);
@@ -102,7 +93,8 @@ export default function ImageClient({ id }: { id: string }) {
   }
 
   // 汎用ボタンユーティリティ
-  const baseBtn = "px-4 py-2 rounded-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition";
+  const baseBtn =
+    "px-4 py-2 rounded-lg font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition";
   const successBtn = `${baseBtn} bg-green-500 text-white hover:bg-green-600 focus:ring-green-300`;
   const secondaryBtn = `${baseBtn} bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-300`;
   const warningBtn = `${baseBtn} bg-yellow-400 text-black hover:bg-yellow-500 focus:ring-yellow-300`;
@@ -111,14 +103,12 @@ export default function ImageClient({ id }: { id: string }) {
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-lg space-y-8">
       {/* 翻訳 */}
       <div className="space-y-2">
-        <button
-          onClick={() => clickTranslate('EN-US')}
-          className={successBtn}
-        >
+        <button onClick={() => clickTranslate("EN-US")} className={successBtn}>
           Translate to English
         </button>
         <div className="p-4 bg-gray-100 rounded-md border text-gray-700 whitespace-pre-wrap">
-          <strong>Translation result:</strong><br />
+          <strong>Translation result:</strong>
+          <br />
           {translate || "ここに翻訳結果が表示されます"}
         </div>
       </div>
