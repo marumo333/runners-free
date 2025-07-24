@@ -5,7 +5,7 @@ import {useEffect,useState} from "react";
 import Like from "./likes";
 
 type AvatarData ={
-    id: string;
+  id: string;
   user_id: string;
   username: string;
   icon_url: string;
@@ -127,7 +127,9 @@ export default function Customer(){
   return (
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl mb-4">お客様の管理画面</h1>
-      <p className="mb-2">ログインユーザー：{user.email} （{user.role}）</p>
+      <p className="mb-2">
+        ログインユーザー：{user.email} （{user.role}）
+      </p>
 
       <form onSubmit={profSubmit} className="space-y-6">
         <div>
@@ -142,12 +144,42 @@ export default function Customer(){
 
         <div>
           <label className="block text-sm font-semibold mb-1">Avatar Image</label>
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <label
+            htmlFor="avatar-upload"
+            className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 cursor-pointer transition"
+          >
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 7h16M4 12h16M4 17h16"
+              />
+            </svg>
+            ファイルを選択
+          </label>
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          {avatarFile && (
+            <p className="mt-2 text-gray-700">
+              選択中のファイル: <span className="font-semibold">{avatarFile.name}</span>
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-500"
+          className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-500 transition"
         >
           ユーザー情報を更新
         </button>
@@ -163,6 +195,7 @@ export default function Customer(){
           />
         </div>
       )}
+
       <Like userId={user.id} />
     </div>
   );
