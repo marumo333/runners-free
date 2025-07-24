@@ -1,5 +1,6 @@
 "use client";
 import { supabase } from "@/utils/supabase/supabaseClient";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 interface LikesImage {
@@ -50,28 +51,51 @@ export default function Like({ userId }: Likes) {
   }, [userId]);
 
   return (
-    <div>
-      <h1>お気に入りの投稿</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}{" "}
-      {/* Error message display */}
+    <div className="max-w-3xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">お気に入りの投稿</h1>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
       {isLiked ? (
-        likedImages.map((img) => (
-          <div key={img.image_id}>
-            <p>画像ID: {img.image_id}</p>
-            {img.image_url ? (
-              <img
-                src={img.image_url}
-                alt="お気に入りの商品"
-                width={200}
-                loading="lazy"
-              />
-            ) : (
-              <p>画像が見つかりません</p>
-            )}
-          </div>
-        ))
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {likedImages.map((img) => (
+            <div
+              key={img.image_id}
+              className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center"
+            >
+              <p className="mb-2 text-gray-700">画像ID: {img.image_id}</p>
+              {img.image_url ? (
+                <img
+                  className="mb-4 rounded-md object-cover"
+                  src={img.image_url}
+                  alt="お気に入りの商品"
+                  width={200}
+                  height={200}
+                  loading="lazy"
+                />
+              ) : (
+                <p className="text-gray-500 mb-4">画像が見つかりません</p>
+              )}
+              <Link
+              href={`/image/${img.image_id}`}
+                className="
+                  px-4 py-2 
+                  bg-blue-500 text-white 
+                  rounded-lg shadow 
+                  hover:bg-blue-600 
+                  focus:outline-none focus:ring-2 focus:ring-blue-300 
+                  transition
+                "
+                onClick={() => {
+                  
+                }}
+              >
+                詳細を見る
+              </Link>
+            </div>
+          ))}
+        </div>
       ) : (
-        <p>いいねした商品はありません</p>
+        <p className="text-gray-500">いいねした商品はありません</p>
       )}
     </div>
   );
