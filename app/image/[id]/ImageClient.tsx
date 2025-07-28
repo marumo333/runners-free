@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabase/supabaseClient";
 import { useRouter } from "next/navigation";
 import LikeSection from "./likeSection";
-import { useCart } from "@/app/hooks/useCart";
+import { useCart } from "@/app/context/page";
 
 interface ImageItem {
   id: string;
