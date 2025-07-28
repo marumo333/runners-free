@@ -7,7 +7,7 @@ import { isMobileState } from "./atoms";
 import MobileComponent from "./MobileComponent";
 import PCComponent from "./PCComponent";
 
-export default function Header({ children }: { children: React.ReactNode }) {
+export default function Header() {
     const [isClient, setIsClient] = useState(false);
     const isMobile = useMediaQuery({ query: '(max-width: 1024px)' });
     const setIsMobile = useSetRecoilState(isMobileState);
@@ -31,7 +31,6 @@ export default function Header({ children }: { children: React.ReactNode }) {
         ) : (
           <PCComponent className="max-lg:hidden" />
         )}
-        <main className="pt-16">{children}</main>
       </>
     );
   }
