@@ -3,7 +3,7 @@
 import { Button, Card } from '@mantine/core';
 import type { NextPage } from 'next';
 import Image from 'next/image';
-import { useCart } from '../hooks/useCart';
+import { useCart } from '../context/page';
 import type { CartItem } from '../types/cart';
 
 const Cart: NextPage = () => {
@@ -31,10 +31,9 @@ const Cart: NextPage = () => {
 
             {/* 画像 */}
             <div className="relative h-52">
-              <Image
+              <img
                 src={item.image_url || '/placeholder.png'}
                 alt={item.name ?? ''}
-                fill
                 style={{ objectFit: 'contain' }}
               />
             </div>
