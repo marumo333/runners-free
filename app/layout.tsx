@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "./provider";
 import Header from "./components/Header";
 import ClientWrapper from "./clientWpapper";
+import CartProvider from "./context/page"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +32,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <CartProvider>
           <Header>
         <main className="min-h-screen flex flex-col items-center px-2">
         <ClientWrapper>{children}</ClientWrapper>
         </main>
         </Header>
+        </CartProvider>
         </Providers>
       </body>
     </html>
