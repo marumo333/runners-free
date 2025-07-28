@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { useCart } from "../hooks/useCart";
+import { useCart } from "../context/page";
 
 type Role = "admin" | "customer" | "staff" | null;
 
