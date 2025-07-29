@@ -5,8 +5,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 type CartContextType = {
   cart: CartItem[];
-  addCart: (post: ShopPost | CartItem) => void;
-  removeCart: (post: ShopPost | CartItem) => void;
+  addCart: (post: ShopPost | CartItem) => Promise<void>;
+  removeCart: (post: ShopPost | CartItem) => Promise<void>;
   loading: boolean;
 };
 
@@ -30,7 +30,7 @@ export default function Context({ children }: { children: React.ReactNode }) {
             id,
             user_id,
             quantity,
-            shopposts(
+            shopposts!cart_items_product_id_fkey(
             id,
             url,
             jan,
@@ -51,25 +51,32 @@ export default function Context({ children }: { children: React.ReactNode }) {
       return;
     }
     const CartItems: CartItem[] =
-      data?.map((item) => ({
-        id: item.shopposts[0]?.id,
-        user_id: item.user_id ?? "",
-        image_url: item.shopposts[0]?.image_url,
-        name: item.shopposts[0]?.name ?? null,
-        url: item.shopposts[0]?.url ?? "",
-        jan: item.shopposts[0]?.jan ?? null,
-        content: item.shopposts[0]?.content ?? null,
-        tag: item.shopposts[0]?.tag ?? null,
-        stock: item.shopposts[0]?.stock ?? null,
-        price: item.shopposts[0]?.price ?? null,
-        created_at: item.shopposts[0]?.created_at ?? "",
-        quantity: item.quantity,
-      })) || [];
+      data?.map((item) => {
+        console.log("item:", item); // デバッグ用
+        console.log("shopposts:", item.shopposts); // デバッグ用
+        // shopposts が配列の場合は最初の要素を取得、オブジェクトの場合はそのまま使用
+        const shoppost = Array.isArray(item.shopposts) ? item.shopposts[0] : item.shopposts;
+
+        return {
+          id: shoppost?.id || item.id, 
+          user_id: item.user_id ?? "",
+          image_url: shoppost?.image_url || "",
+          name: shoppost?.name ?? null,
+          url: shoppost?.url ?? "",
+          jan: shoppost?.jan ?? null,
+          content: shoppost?.content ?? null,
+          tag: shoppost?.tag ?? null,
+          stock: shoppost?.stock ?? null,
+          price: shoppost?.price ?? null,
+          created_at: shoppost?.created_at ?? "",
+          quantity: item.quantity,
+        };
+      }) || [];
     setCart(CartItems);
   };
 
   //カートに追加
-  const addCart = async (post: ShopPost) => {
+  const addCart = async (post: ShopPost|CartItem) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -77,26 +84,51 @@ export default function Context({ children }: { children: React.ReactNode }) {
     if (!user) return;
     setLoading(true);
 
-    const { data, error } = await supabase.from("cart_items").upsert(
-      {
+    // 既存のカートアイテムを確認
+  const { data: existingItem } = await supabase
+    .from("cart_items")
+    .select("quantity")
+    .eq("user_id", user.id)
+    .eq("product_id", post.id)
+    .maybeSingle();
+
+  console.log("既存アイテム:", existingItem); // デバッグ用
+
+  if (existingItem) {
+    // 既存アイテムの数量を増加
+    const { error } = await supabase
+      .from("cart_items")
+      .update({ quantity: existingItem.quantity + 1 })
+      .eq("user_id", user.id)
+      .eq("product_id", post.id);
+    
+    if (error) {
+      console.error("数量更新エラー:", error);
+    } else {
+      console.log("数量を更新しました:", existingItem.quantity + 1);
+    }
+    } else {
+        // 新しいアイテムを追加
+    const { error } = await supabase
+      .from("cart_items")
+      .insert({
         user_id: user.id,
         product_id: post.id,
         quantity: 1,
-      },
-      {
-        onConflict: "user_id,product_id",
-      }
-    );
+      });
+    
     if (error) {
-      console.log("カート追加エラー", error);
+      console.error("カート追加エラー:", error);
     } else {
-      await fetchCart();
+      console.log("新しいアイテムを追加しました");
     }
+    }
+    await fetchCart();
     setLoading(false);
   };
 
   //カートから削除
-  const removeCart = async (post: ShopPost) => {
+  const removeCart = async (post: ShopPost|CartItem) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -106,8 +138,9 @@ export default function Context({ children }: { children: React.ReactNode }) {
 
     //数量を取得
     const { data: cartItem } = await supabase
-      .from("cart_item")
+      .from("cart_items")
       .select("quantity")
+      .eq("user_id", user.id)
       .eq("product_id", post.id)
       .maybeSingle();
 
