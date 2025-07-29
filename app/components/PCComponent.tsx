@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { useCart } from "../context/page";
 
 type Role = "admin" | "customer" | "staff" | null;
-
 export default function PCComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
   const [role, setRole] = useState<Role>(null);
@@ -17,6 +16,7 @@ export default function PCComponent({ className }: { className?: string }) {
 
   const { cart } = useCart();
   const totalQuantity = cart.length;
+  const items = cart;
 
   const supabase = createClientComponentClient();
 
@@ -139,10 +139,12 @@ export default function PCComponent({ className }: { className?: string }) {
                   >
                     {totalQuantity > 0 ? (
                       <ul className="space-y-1 max-h-40 overflow-y-auto">
-                        {cart.map((item) => (
+                        {items.map((item,index) => (
                           <li key={item.id} className="flex justify-between">
+                            <div key={item.id || index}>
                             <span className="truncate">{item.name}</span>
                             <span className="font-bold">×{item.quantity}</span>
+                            </div>
                           </li>
                         ))}
                       </ul>
