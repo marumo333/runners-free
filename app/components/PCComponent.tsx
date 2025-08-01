@@ -12,7 +12,6 @@ type Role = "admin" | "customer" | "staff" | null;
 export default function PCComponent({ className }: { className?: string }) {
   const dispatch = useDispatch();
   const [role, setRole] = useState<Role>(null);
-  const router = useRouter();
 
   const { cart } = useCart();
   const totalQuantity = cart.length;
