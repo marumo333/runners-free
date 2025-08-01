@@ -4,10 +4,105 @@ import { Button, Card } from "@mantine/core";
 import type { NextPage } from "next";
 import { useCart } from "../context/page";
 import type { CartItem } from "../types/cart";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const Cart: NextPage = () => {
   const { cart, addCart, removeCart } = useCart();
+  const [show, setShow] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
 
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+    };
+    getUser();
+
+    // 認証状態の変更を監視
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
+  const handleOpen = () => {
+    setShow(true);
+  };
+
+  const handleCancel = () => {
+    setShow(false);
+  };
+
+  //stripe checkout
+  const startCheckout = async (item: CartItem) => {
+    const userId = item.user_id;
+    if (!item || !userId) return;
+
+    try {
+      const response = await fetch(`/image/${item.id}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: item.id,
+          name: item.name,
+          price: Math.round(Number(item.price)),
+          userId: userId,
+        }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData && responseData.checkout_url) {
+        sessionStorage.setItem("stripeSessionId", responseData.session_id);
+        router.push(responseData.checkout_url);
+      } else {
+        console.error("Invalid response data:", responseData);
+      }
+    } catch (err) {
+      console.error("Error in startCheckout:", err);
+    }
+  };
+
+  const handlePurchaseConfirm = (item: CartItem) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+    setShow(false);
+    startCheckout(item);
+  };
+
+  // 認証中は読み込み表示
+  if (authLoading) {
+    return (
+      <div className="pt-16 flex justify-center items-center min-h-screen">
+        <div>読み込み中...</div>
+      </div>
+    );
+  }
+
+  // 未認証時は自動リダイレクト
+  if (!user) {
+    return (
+      <div className="pt-16 flex justify-center items-center min-h-screen">
+        <div>ログインページに移動中...</div>
+      </div>
+    );
+  }
   return (
     <div className="pt-16">
       {" "}
@@ -92,6 +187,30 @@ const Cart: NextPage = () => {
               >
                 ＋
               </Button>
+              <button onClick={handleOpen} className="btn-warning">
+                購入する
+              </button>
+              {/* 購入モーダル */}
+              {show && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 text-center">
+                    <h3 className="text-xl font-semibold">
+                      この商品を購入しますか？
+                    </h3>
+                    <div className="flex justify-center gap-4">
+                      <button onClick={handleCancel} className="btn-secondary">
+                        キャンセル
+                      </button>
+                      <button
+                        onClick={() => handlePurchaseConfirm(item)}
+                        className="btn-success"
+                      >
+                        購入する
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         ))}
@@ -99,5 +218,3 @@ const Cart: NextPage = () => {
     </div>
   );
 };
-
-export default Cart;
