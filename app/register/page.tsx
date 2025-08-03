@@ -16,7 +16,7 @@ export default function Register() {
     e.preventDefault();
 
     // ペイロードをトリムして整形
-    const {data,error} = await supabase.auth.signUp( {
+    const { error } = await supabase.auth.signUp( {
       email: email.trim(),
       password: password.trim(),
       options:{data:{role}}
