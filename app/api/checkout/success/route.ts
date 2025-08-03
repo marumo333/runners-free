@@ -25,18 +25,29 @@ export async function POST(request: Request) {
 
     // 重複購入防止
     const existingPurchase = await prisma.purchase.findFirst({
-      where: { userId, productId },
+      where: {
+        userId,
+        productId,
+      },
     });
 
     if (existingPurchase) {
       return NextResponse.json({ message: "すでに購入済みです" }, { status: 409 });
     }
 
+    // 購入レコード作成
     const purchase = await prisma.purchase.create({
-      data: { userId, productId },
+      data: {
+        id: `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId,
+        productId,
+      },
     });
 
-    return NextResponse.json({ purchase }, { status: 200 });
+    return NextResponse.json({ 
+      message: "購入成功",
+      purchase
+    }, { status: 200 });
 
   } catch (err: any) {
     console.error("Error in checkout complete:", err);
