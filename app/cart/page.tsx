@@ -53,7 +53,7 @@ const Cart: NextPage = () => {
     if (!item || !userId) return;
 
     try {
-      const response = await fetch(`/image/${item.id}/checkout`, {
+      const response = await fetch(`/api/checkout/create-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -218,3 +218,4 @@ const Cart: NextPage = () => {
     </div>
   );
 };
+export default Cart;
