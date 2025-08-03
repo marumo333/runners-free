@@ -5,7 +5,7 @@ import { signOut, signIn } from "../authSlice";
 import { useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import React from "react";
-import Icon from "./Icon";
+import Icon from "@/app/Login/AvatarIcon";
 import { useRouter } from "next/navigation";
 
 type GithubProps = {

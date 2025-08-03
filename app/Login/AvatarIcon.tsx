@@ -6,7 +6,7 @@ import Image from "next/image";
 
 type Props = {
   url: string;
-  className?: string;     // ← 追加
+  className?: string;     
 };
 
 const Icon: FC<Props> = ({ url, className = "" }) => (
