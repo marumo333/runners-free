@@ -70,7 +70,7 @@ runners-free/
 │   ├── deepl.tsx                 # DeepL翻訳
 │   └── prisma.ts                 # Prismaクライアント
 ├── prisma/                       # Prismaスキーマ
-│   └── schema.prisma
+│   └── schema.prisma             # 統合データベーススキーマ
 ├── public/                       # 静的ファイル
 ├── utils/                        # ユーティリティ関数
 │   ├── supabase/                 # Supabase設定
@@ -115,6 +115,9 @@ NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
+# Database (Prisma - Supabase PostgreSQL)
+DATABASE_URL=postgresql://postgres:[password]@db.[project-id].supabase.co:5432/postgres
+
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
@@ -152,8 +155,11 @@ cp .env.example .env.local
 # Prismaクライアント生成
 npx prisma generate
 
-# データベーススキーマの適用
+# データベースマイグレーション（本番環境）
 npx prisma db push
+
+# 既存データベースからスキーマを取得（開発時）
+npx prisma db pull
 ```
 
 5. **開発サーバーの起動**
@@ -163,12 +169,109 @@ npm run dev
 
 ## データベース設計
 
+### Prisma + Supabase PostgreSQL
+
+このプロジェクトでは、**Prisma ORM**を使用してSupabaseのPostgreSQLデータベースにアクセスしています。
+
+#### Prisma設定の詳細
+
+**設定ファイル**: `prisma/schema.prisma` （単一ファイルで全管理）
+```prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "auth"]
+}
+```
+
+**主な特徴:**
+- **マルチスキーマ対応**: `public`と`auth`スキーマを同時使用
+- **型安全性**: TypeScript完全対応
+- **自動生成**: Supabaseから既存テーブル構造を自動取得
+
+#### Prismaコマンド
+
+```bash
+# スキーマからクライアント生成
+npx prisma generate
+
+# Supabaseからスキーマを取得（初回・更新時）
+npx prisma db pull --force
+
+# データベースブラウザ起動
+npx prisma studio
+
+# スキーマ検証
+npx prisma validate
+
+# データベースリセット（注意: データが削除されます）
+npx prisma db push --reset
+```
+
+#### PrismaとSupabaseの連携
+
+**メリット:**
+- ✅ **型安全なクエリ**: 自動生成されたクライアントによる完全な型サポート
+- ✅ **リレーション処理**: JOINクエリの簡潔な記述
+- ✅ **トランザクション**: 複数操作の原子性保証
+- ✅ **マイグレーション**: スキーマ変更の管理
+
+**使用例:**
+```typescript
+// libs/prisma.ts - シングルトンクライアント
+import { PrismaClient } from '../app/generated/prisma'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+
+export default prisma
+
+// 使用例: API Route
+import prisma from "@/libs/prisma";
+
+// 購入レコード作成（重複チェック付き）
+const existingPurchase = await prisma.purchase.findFirst({
+  where: { userId, productId }
+});
+
+if (!existingPurchase) {
+  const purchase = await prisma.purchase.create({
+    data: { userId, productId }
+  });
+}
+```
+
 ### 主要テーブル
-- **users**: ユーザー情報
+- **users (auth schema)**: ユーザー情報（Supabase Auth）
+- **shopusers (public schema)**: ユーザープロフィール
 - **shopposts**: 商品情報
 - **cart_items**: カートアイテム
-- **purchases**: 購入履歴
-- **review_applications**: レビュー申請
+- **Purchase**: 購入履歴
+- **likes**: いいね機能
+- **avatars**: プロフィール画像
+
+**テーブル関係図:**
+```
+auth.users (Supabase Auth)
+    ↓ 1:1
+shopusers (プロフィール)
+    ↓ 1:N
+shopposts (商品)
+    ↓ M:N
+cart_items (カート) → Purchase (購入履歴)
+    ↓ 1:N
+likes (いいね)
+```
 
 ## 開発で苦労した実装ポイント
 
@@ -242,7 +345,53 @@ const CartItems: CartItem[] = data?.map((item) => {
 - 配列とオブジェクトの両方に対応したデータ処理
 - リアルタイムでのカート状態更新
 
-### 3. 認証状態とカート連携
+### 3. Stripe決済とPrismaの連携
+**課題**: Stripe Checkoutの成功後に購入履歴をデータベースに安全に記録する
+
+```typescript
+// app/api/checkout/success/route.ts
+import prisma from "@/libs/prisma";
+
+export async function POST(request: Request) {
+  try {
+    const { sessionId } = await request.json();
+    
+    // Stripe session情報取得
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const userId = session.client_reference_id;
+    const productId = session.metadata?.productId;
+
+    // 重複購入防止
+    const existingPurchase = await prisma.purchase.findFirst({
+      where: { userId, productId }
+    });
+
+    if (existingPurchase) {
+      return NextResponse.json({ message: "すでに購入済みです" }, { status: 409 });
+    }
+
+    // トランザクション処理で購入記録作成
+    const purchase = await prisma.purchase.create({
+      data: {
+        id: `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        userId,
+        productId,
+      }
+    });
+
+    return NextResponse.json({ message: "購入成功", purchase });
+  } catch (error) {
+    // エラーハンドリング
+  }
+}
+```
+
+**解決策のポイント:**
+- Stripe WebhookとPrismaトランザクションの組み合わせ
+- 重複購入防止ロジック
+- エラー時のロールバック処理
+
+### 4. 認証状態とカート連携
 **課題**: ユーザーログイン状態とカート情報の同期、未認証時の適切な処理
 
 ```typescript
