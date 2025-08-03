@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --dir app --dir libs --dir utils",
+    "lint:fix": "next lint --fix --dir app --dir libs --dir utils",
+    "type-check": "tsc --noEmit",
+    "lint:check": "eslint app/ libs/ utils/ --ext .ts,.tsx"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
