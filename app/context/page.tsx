@@ -70,6 +70,10 @@ export default function Context({ children }: { children: React.ReactNode }) {
           price: shoppost?.price ?? null,
           created_at: shoppost?.created_at ?? "",
           quantity: item.quantity,
+          shopposts: shoppost ? {
+            ...shoppost,
+            user_id: item.user_id ?? ""
+          } : shoppost,
         };
       }) || [];
     setCart(CartItems);
