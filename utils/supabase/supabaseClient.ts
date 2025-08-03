@@ -6,6 +6,7 @@ import type { Database } from "@/libs/database.types";
 
 // globalThis にキャッシュして一度だけ生成
 declare global {
+  // eslint-disable-next-line no-var
   var __supabase_client: ReturnType<typeof createClientComponentClient<Database>> | undefined;
 }
 
