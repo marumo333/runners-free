@@ -34,7 +34,7 @@ export default function Redirect() {
             : "/dashboard/customer"
       );
     })();
-  }, [router]);
+  }, [router, supabase]);
 
   return <p className="text-center mt-20">リダイレクト中…</p>;
 }
