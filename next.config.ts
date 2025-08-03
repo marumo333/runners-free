@@ -11,10 +11,8 @@ const nextConfig: NextConfig = {
     // ビルド時のTypeScriptエラーを無視しない（開発時は表示される）
     ignoreBuildErrors: false,
   },
-  experimental: {
-    // Prismaクライアントをサーバーサイドで使用
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
-  },
+  // Prismaクライアントをサーバーサイドで使用
+  serverExternalPackages: ['@prisma/client', 'prisma'],
   // 画像最適化の設定
   images: {
     domains: ['localhost'],
