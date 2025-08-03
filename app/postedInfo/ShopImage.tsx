@@ -35,7 +35,19 @@ export default function ShopImage() {
         console.error("投稿取得エラー:", error);
       } else {
         setImages(
-          (data || []).map((item: any) => ({
+          (data || []).map((item: {
+            id: string;
+            user_id: string;
+            name: string;
+            image_url: string;
+            jan: string | number;
+            content: string;
+            tag: string;
+            price: string;
+            stock: number;
+            status: string;
+            created_at: string;
+          }) => ({
             id: item.id,
             user_id: item.user_id,
             name: item.name,
@@ -45,7 +57,7 @@ export default function ShopImage() {
             tag: item.tag,
             stock: Number(item.stock),
             price: Number(item.price),
-            status: item.status,
+            status: item.status as "pending" | "approved" | "rejected",
           }))
         );
       }
