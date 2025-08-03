@@ -10,7 +10,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const Cart: NextPage = () => {
   const { cart, addCart, removeCart } = useCart();
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [authLoading, setLoading] = useState(true);
   const router = useRouter();
@@ -38,30 +38,80 @@ const Cart: NextPage = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
-  const handleOpen = () => {
-    setShow(true);
+  }, [supabase.auth,router]);
+  const handleOpen = (itemId:string) => {
+    setShow(itemId);
   };
 
   const handleCancel = () => {
-    setShow(false);
+    setShow( null);
   };
 
   //stripe checkout
   const startCheckout = async (item: CartItem) => {
-    const userId = item.user_id;
-    if (!item || !userId) return;
+    if (!item) return;
+
+    let shoppost;
+
+    if (item.shopposts) {
+    // ネストされた構造の場合
+    shoppost = Array.isArray(item.shopposts) ? item.shopposts[0] : item.shopposts;
+    console.log("Using nested shopposts data:", shoppost);
+  } else {
+    // 直接構造の場合（現在のケース）
+    shoppost = item;
+    console.log("Using direct item data:", shoppost);
+  }
+
+  if (!shoppost) {
+    console.error('商品データが見つかりません。', item);
+    return;
+  }
+
+    if(!shoppost){
+      console.error('shooppostsデータが見つかりません。',item);
+      return;
+    }
+    console.log("shoppost data",shoppost)
+
+    //価格の処理を2200円(税抜)から2200に変換
+    let numberPrice = 0;
+    if (typeof shoppost.price === 'string') {
+      const priceMatch = (shoppost.price as string).match(/\d+/);
+      // 価格が見つかった場合はnumberPriceに代入
+      if (priceMatch) {
+        numberPrice = Number(priceMatch[0]);
+      }
+    } else if (typeof shoppost.price === 'number') {
+      numberPrice = shoppost.price;
+    } else {
+      // 型が string でも number でもない場合のフォールバック
+      numberPrice = 0;
+    }
+    if (!shoppost.id || !shoppost.name || numberPrice <= 0) {
+    console.error("Missing or invalid required fields:", {
+      id: shoppost.id,
+      name: shoppost.name,
+      price: shoppost.price,
+      numericPrice: numberPrice
+    });
+    alert(`商品情報が不完全です:\nID: ${shoppost.id}\n名前: ${shoppost.name}\n価格: ${shoppost.price}`);
+    return;
+  }
+
+  const requestData = {
+    productId: shoppost.id, // shopposts.id を使用
+    name: shoppost.name,    // shopposts.name を使用
+    price: numberPrice,    // 数値に変換された価格
+    quantity: item.quantity || 1,
+  };
+
 
     try {
       const response = await fetch(`/api/checkout/create-session`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productId: item.id,
-          name: item.name,
-          price: Math.round(Number(item.price)),
-          userId: userId,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       const responseData = await response.json();
@@ -82,7 +132,7 @@ const Cart: NextPage = () => {
       router.push("/login");
       return;
     }
-    setShow(false);
+    setShow(null);
     startCheckout(item);
   };
 
@@ -187,16 +237,17 @@ const Cart: NextPage = () => {
               >
                 ＋
               </Button>
-              <button onClick={handleOpen} className="btn-warning">
+              <button onClick={()=>handleOpen(item.id)} className="btn-warning">
                 購入する
               </button>
               {/* 購入モーダル */}
-              {show && (
+              {show === item.id && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
                   <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 text-center">
                     <h3 className="text-xl font-semibold">
-                      この商品を購入しますか？
+                      {item.name}を購入しますか？
                     </h3>
+                    <p className="text-gray-600">価格: ¥{item.price}</p>
                     <div className="flex justify-center gap-4">
                       <button onClick={handleCancel} className="btn-secondary">
                         キャンセル
