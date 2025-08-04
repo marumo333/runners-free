@@ -37,8 +37,16 @@ export default function LogoutPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-gray-50"
+      style={{
+        backgroundImage: 'url(/logout.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="max-w-md w-full bg-white/90 backdrop-blur-sm rounded-lg shadow-md p-8">
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
             <svg
