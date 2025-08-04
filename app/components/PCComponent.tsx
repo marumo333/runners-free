@@ -108,7 +108,7 @@ export default function PCComponent({ className }: { className?: string }) {
                     aria-label={`カートに ${totalQuantity} 件の商品があります`}
                   >
                     <Image
-                      src="/ECcart.png.webp"
+                      src="/ECcart.png.webpp.png"
                       alt="Cart"
                       width={32}
                       height={32}
