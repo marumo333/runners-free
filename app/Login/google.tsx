@@ -56,7 +56,7 @@ export default function Google({className}:GoogleProps) {
 
   useEffect(() => {
     if (user) {
-      router.push("http://localhost:3000/redirect");
+      router.push("/redirect");
     }
   }, [user, router]);
 
@@ -64,7 +64,7 @@ export default function Google({className}:GoogleProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `http://localhost:3000/redirect`,
+        redirectTo: `/redirect`,
       },
     });
     if (error) throw new Error(error.message);

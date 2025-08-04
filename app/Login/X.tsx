@@ -50,7 +50,7 @@ export default function X({className}:XProps) {
 
   useEffect(() => {
     if (user) {
-      router.push("http://localhost:3000/redirect");
+      router.push("/redirect");
     }
   }, [user, router]);
 
@@ -58,7 +58,7 @@ export default function X({className}:XProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "twitter",
       options: {
-        redirectTo: `http://localhost:3000/redirect`,
+        redirectTo: `/redirect`,
       },
     });
     if (error) throw new Error(error.message);

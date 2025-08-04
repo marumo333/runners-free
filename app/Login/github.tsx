@@ -58,7 +58,7 @@ export default function Github({className}:GithubProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `http://localhost:3000/redirect`,
+        redirectTo: `/redirect`,
       },
     });
     if (error) throw new Error(error.message);
