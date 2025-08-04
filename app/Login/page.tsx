@@ -44,7 +44,7 @@ export default function SignInPage() {
     );
 
     setTimeout(() => {
-    router.replace("/redirect");
+      router.replace("/redirect");
     }, 50);
   };
   return (

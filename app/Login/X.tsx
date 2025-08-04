@@ -58,7 +58,7 @@ export default function X({className}:XProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "twitter",
       options: {
-        redirectTo: `/redirect`,
+        redirectTo: `${window.location.origin}/redirect`,
       },
     });
     if (error) throw new Error(error.message);

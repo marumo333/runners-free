@@ -61,13 +61,21 @@ export default function Google({className}:GoogleProps) {
   }, [user, router]);
 
   const signInGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `/redirect`,
-      },
-    });
-    if (error) throw new Error(error.message);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/redirect`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      if (error) throw new Error(error.message);
+    } catch (error) {
+      console.error("Google認証エラー:", error);
+    }
   };
 
   const signOutGoogle = async () => {
