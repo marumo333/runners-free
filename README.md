@@ -43,7 +43,7 @@ runners-free/
 │   │   ├── checkout/             # Stripe決済API
 │   │   │   ├── create-session/   # セッション作成
 │   │   │   └── success/          # 決済成功処理
-│   │   ├── review/               # レビュー関連API
+│   │   ├── review/               # フリーランス書類申請関連API
 │   │   └── translate/            # 翻訳API
 │   ├── auth/                     # 認証関連
 │   │   ├── login/                # ログインページ
@@ -86,22 +86,27 @@ runners-free/
 - Supabase Authによるメール・SNS認証
 - ロールベースアクセス制御（admin/customer/staff）
 
-### 2. 商品管理
+### 2.フリーランス証明書の申請機能
+- supabaseのreview_applicationsテーブルを作ることで、フリーランス申請の判定
+- app/review(フリーランス書類申請関連API)にてPOST
+- staff-roleが管理者ページで許可することで商品に申請済み・未申請のレッテルを表示
+  
+### 3. 商品管理
 - 商品の投稿・編集・削除
 - 画像アップロード（Supabase Storage）
 - カテゴリ・タグ付け機能
 
-### 3. ショッピングカート
+### 4. ショッピングカート
 - 商品のカート追加・削除
 - 数量変更機能
 - リアルタイムカート更新
 
-### 4. 決済機能
+### 5. 決済機能
 - Stripe Checkoutによる安全な決済
 - 決済履歴管理
 - 購入完了通知
 
-### 5. 検索・フィルタリング
+### 6. 検索・フィルタリング
 - 商品名・カテゴリ検索
 - レスポンシブ対応
 
