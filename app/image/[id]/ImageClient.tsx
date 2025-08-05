@@ -71,6 +71,11 @@ export default function ImageClient({ id }: { id: string }) {
     router.back();
   };
 
+  const handleReview = () => {
+    // Navigate to review page or implement review functionality
+    router.push(`/review/${id}`);
+  };
+
   useEffect(() => {
     fetchImage(id);
     fetchUser();
@@ -159,6 +164,13 @@ export default function ImageClient({ id }: { id: string }) {
           className={warningBtn}
         >
           カートに追加
+        </button>
+        {/*レビューボタン*/}
+        <button
+        onClick={handleReview}
+        className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+        >
+          レビュー
         </button>
       </div>
 
