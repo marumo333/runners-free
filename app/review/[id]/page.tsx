@@ -25,7 +25,51 @@ export default function Review({ params }: { params: { id: string } }){
         rating:5,
         comment:''
     })
-    
+    //レビュデータをsupabaseから取得
+    useEffect(()=>{
+        const fetchReview = async()=>{
+            try{
+                setLoading(true);
+                const { data,error} = await supabase
+                .from('reviews')
+                .select('*')
+                .eq('shoppost_id',shopId)
+                .order('creadted_at',{ascending:false})
+
+                if(error){
+                    console.error('レビューデータ取得エラー:',error)
+                }
+                setReviews(data||[])
+            }catch(error){
+                console.error('レビューデータ取得エラー:',error)
+            }finally{
+                setLoading(false);
+            }
+        }
+        if(shopId){
+        fetchReview();
+        }
+    },[shopId,supabase])
+
+    //レビュー投稿
+    const handleSubmitReview = async(e:React.FormEvent)=>{
+        e.preventDefault();
+        try{
+            setSubmitting(true);
+
+            //現在のユーザーを取得
+            const {data: {user}} = await supabase.auth.getUser() 
+            
+            if(!user){
+                console.error('ユーザーがログインしていません');
+                return;
+            }
+        }catch(error){
+            console.error('レビュー投稿エラー:', error);
+        }finally{
+            setSubmitting(false);
+        }
+    }
     return(<>
     </>)
 }
