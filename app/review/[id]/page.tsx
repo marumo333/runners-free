@@ -107,6 +107,20 @@ export default function Review({ params }: { params: { id: string } }){
             setSubmitting(false);
         }
     }
+    //平均評価を計算
+    const averageRating = reveiwes.length > 0
+        ? (reveiwes.reduce((sum, review) => sum + review.rating, 0) / reveiwes.length).toFixed(1)
+        : '0.0';
+
+    //日付をフォーマット化
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleDateString('ja-JP');
+    }
+    
     return(<>
+        <div>
+            <h1>レビュー</h1>
+            <p>平均評価: {averageRating}</p>
+        </div>
     </>)
 }
