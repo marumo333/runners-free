@@ -34,36 +34,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Stripe Checkout Sessionを作成
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      client_reference_id: user.id, // ユーザーIDを設定
-      customer_email: user.email || undefined, // ユーザーメール
-      metadata: {
-        productId: productId,
-        userId: user.id,
-        quantity: quantity.toString(),
-      },
-      line_items: [
-        {
-          price_data: {
-            currency: 'jpy',
-            product_data: {
-              name: name,
-              metadata: {
-                productId: productId,
-              },
-            },
-            unit_amount: Math.round(price), // 円単位
-          },
-          quantity: quantity,
+// Stripe Checkout Sessionを作成
+const session = await stripe.checkout.sessions.create({
+  line_items: [
+    {
+      price_data: {
+        currency: 'jpy',
+        product_data: {
+          name: name,
         },
-      ],
-      payment_method_types: ['card'],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart?canceled=true`,
-      expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30分で期限切れ
-    });
+        unit_amount: price,
+      },
+      quantity: quantity,
+    }
+  ],
+  mode: "payment",
+  success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
+  metadata: {
+    user_id: user.id,
+    product_id: productId,
+    items: JSON.stringify([{
+      id: productId,
+      name: name,
+      price: price,
+      quantity: quantity
+    }])
+  }
+});
 
     console.log('stripeのseeeionが作成されました。', session.id);
 
