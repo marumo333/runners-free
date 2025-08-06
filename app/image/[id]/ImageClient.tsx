@@ -72,8 +72,9 @@ export default function ImageClient({ id }: { id: string }) {
   };
 
   const handleReview = () => {
-    // Navigate to review page or implement review functionality
-    router.push(`/review/${id}`);
+    if (imageDetail) {
+      router.push(`/image/${imageDetail.id}/review`);
+    }
   };
 
   useEffect(() => {
@@ -167,10 +168,10 @@ export default function ImageClient({ id }: { id: string }) {
         </button>
         {/*レビューボタン*/}
         <button
-        onClick={handleReview}
-        className="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+          onClick={handleReview}
+          className={`${baseBtn} bg-green-500 text-white hover:bg-green-600 focus:ring-green-300`}
         >
-          レビュー
+          レビューを見る
         </button>
       </div>
 
