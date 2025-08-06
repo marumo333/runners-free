@@ -18,7 +18,7 @@ export default function Review({ params }: { params: { id: string } }){
     const shopId = params.id
 
     const [reveiwes,setReviews] = useState<Review[]>([])
-    const [showReviewFrom,setReviewForm] = useState(false);
+    const [showReviewForm, setShowReviewForm] = useState(false)
     const [loading,setLoading] = useState(true);
     const [submitting,setSubmitting] = useState(false);
     const [newReview,setNewReview] = useState({
@@ -64,8 +64,45 @@ export default function Review({ params }: { params: { id: string } }){
                 console.error('ユーザーがログインしていません');
                 return;
             }
+        //すでに同じユーザがレビューしているのかチェック
+        const {data:existingReview} = await supabase
+        .from('reviews')
+        .select('id')
+        .eq('shoppost_id', shopId)
+        .eq('user_id', user.id)
+        .maybeSingle()
+        if(existingReview){
+            alert('この商品はレビュー済みです。')
+            return;
+        }
+        const reviewData = {
+            shoppost_id:shopId,
+            user_id:user.id,
+            user_name:user.user_metadata?.name||user.email||'Anonymous',
+            rating:newReview.rating,
+            comment:newReview.comment
+        }
+        const {data,error} = await supabase
+        .from('reviews')
+        .insert({reviewData})
+        .select()
+
+        if(error){
+            console.error('レビュー投稿エラー',error)
+            alert('レビューの投稿に失敗しました。')
+            return;
+        }
+        //投稿成功時の処理
+        if(data&&data.length>0){
+            setReviews([data[0],...reveiwes])
+            setNewReview({rating:5,comment:''})
+            setShowReviewForm(false)
+            alert('レビューが投稿されました！')
+        }
+
         }catch(error){
             console.error('レビュー投稿エラー:', error);
+            alert('レビューの投稿に失敗しました。')
         }finally{
             setSubmitting(false);
         }
