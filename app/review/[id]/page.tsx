@@ -116,11 +116,21 @@ export default function Review({ params }: { params: { id: string } }){
     const formatDate = (date: string) => {
         return new Date(date).toLocaleDateString('ja-JP');
     }
+
+    //星の評価を表示する関数
+    const renderStars = (rating: number) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <span key={i} className={i <= rating ? "text-yellow-400" : "text-gray-300"}>
+                    ★
+                </span>
+            );
+        }
+        return stars;
+    }
     
     return(<>
-        <div>
-            <h1>レビュー</h1>
-            <p>平均評価: {averageRating}</p>
-        </div>
+    
     </>)
 }
