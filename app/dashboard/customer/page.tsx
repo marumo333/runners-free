@@ -3,7 +3,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React from "react";
 import {useEffect,useState} from "react";
 import Like from "./likes";
-import Orders from './orders.tsx'
+import Orders from './orders'
 
 type AvatarData ={
   id: string;
