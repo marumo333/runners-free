@@ -3,6 +3,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import React from "react";
 import {useEffect,useState} from "react";
 import Like from "./likes";
+import Orders from './orders.tsx'
 
 type AvatarData ={
   id: string;
@@ -195,8 +196,16 @@ export default function Customer(){
           />
         </div>
       )}
+      {/* 購入履歴セクション */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+        <Orders userId={user.id} />
+      </div>
 
-      <Like userId={user.id} />
+      {/* いいねセクション */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-semibold mb-4">お気に入り商品</h2>
+        <Like userId={user.id} />
+      </div>
     </div>
   );
 }
