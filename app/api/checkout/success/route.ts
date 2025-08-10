@@ -1,4 +1,6 @@
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import Stripe from 'stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -29,6 +31,37 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    //supabaseに購入履歴を保存
+    const supabase = createRouteHandlerClient({cookies})
+
+    //既に保存されているかチェック
+    const {data:existingOrder} = await supabase
+    .from('purchase')
+    .select('id')
+    .eq('session_id',sessionId)
+    .maybeSingle()
+
+    if(!existingOrder){
+      //購入履歴を保存
+      const orderData = {
+        session_id: sessionId,
+        user_id: session.metadata?.user_id,
+        amount: session.amount_total ? session.amount_total / 100 : 0,
+        currency: session.currency || 'jpy',
+        payment_status: session.payment_status,
+        items: session.metadata?.items ? JSON.parse(session.metadata.items) : [],
+        stripe_payment_intent_id: session.payment_intent,
+        customer_email: session.customer_details?.email,
+      }
+
+      const { error: insertError } = await supabase
+        .from('Purchase')
+        .insert(orderData)
+
+      if (insertError) {
+        console.error('購入履歴の保存エラー:', insertError)
+      }
+    }
     // 注文詳細を返却
     return NextResponse.json({
       id: session.id,
