@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
+import Link from "next/link";
 
 interface OrdersProps {
   userId: string;
@@ -81,12 +82,12 @@ export default function Orders({ userId }: OrdersProps) {
             購入履歴がありません
           </h3>
           <p className="text-gray-600 mb-4">まだ商品を購入していません。</p>
-          <a
+          <Link
             href="/"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             商品を探す
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="space-y-6">
