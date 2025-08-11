@@ -9,6 +9,8 @@
 - **カート機能**: 商品をカートに追加して一括購入
 - **決済機能**: Stripe決済による安全な取引
 - **ユーザー認証**: Supabase Authによるセキュアな認証
+- **レビュー機能**: 商品レビューの投稿・閲覧機能 ✨ NEW
+- **購入履歴管理**: マイページでの購入履歴確認機能 ✨ NEW
 - **レスポンシブデザイン**: PC・スマートフォン対応
 
 ## 技術スタック
@@ -56,13 +58,18 @@ runners-free/
 │   ├── context/                  # Context API（カート管理）
 │   ├── dashboard/                # ダッシュボード
 │   │   ├── admin/                # 管理者画面
-│   │   ├── customer/             # 顧客画面
+│   │   ├── customer/             # 顧客画面（購入履歴含む）
 │   │   └── staff/                # スタッフ画面
 │   ├── image/                    # 商品画像表示
+│   │   └── [id]/                 
+│   │       └── review/           # 商品レビューページ ✨ NEW
 │   ├── login/                    # ログイン
 │   ├── post/                     # 商品投稿
 │   ├── register/                 # ユーザー登録
+│   ├── review/                   # レビュー関連（旧構造）
 │   ├── search/                   # 商品検索
+│   ├── checkout/                 # 決済関連 ✨ NEW
+│   │   └── success/              # 決済成功ページ
 │   ├── types/                    # TypeScript型定義
 │   └── globals.css               # グローバルスタイル
 ├── libs/                         # ライブラリ・ユーティリティ
@@ -105,8 +112,22 @@ runners-free/
 - Stripe Checkoutによる安全な決済
 - 決済履歴管理
 - 購入完了通知
+- 決済成功ページでの注文詳細表示 ✨ NEW
 
-### 6. 検索・フィルタリング
+### 6. レビュー機能 ✨ NEW
+- 商品レビューの投稿・閲覧
+- 5段階評価システム
+- 平均評価の自動計算
+- ユーザー認証によるレビュー投稿制限
+- 重複レビュー防止機能
+
+### 7. 購入履歴管理 ✨ NEW
+- マイページでの購入履歴確認
+- 注文詳細の表示
+- 決済状況の確認
+- 注文番号による管理
+
+### 8. 検索・フィルタリング
 - 商品名・カテゴリ検索
 - レスポンシブ対応
 
@@ -260,8 +281,9 @@ if (!existingPurchase) {
 - **users (auth schema)**: ユーザー情報（Supabase Auth）
 - **shopusers (public schema)**: ユーザープロフィール
 - **shopposts**: 商品情報
+- **reviews**: 商品レビュー ✨ NEW
+- **purchase**: 購入履歴 ✨ NEW
 - **cart_items**: カートアイテム
-- **Purchase**: 購入履歴
 - **likes**: いいね機能
 - **avatars**: プロフィール画像
 
@@ -272,15 +294,69 @@ auth.users (Supabase Auth)
 shopusers (プロフィール)
     ↓ 1:N
 shopposts (商品)
-    ↓ M:N
-cart_items (カート) → Purchase (購入履歴)
-    ↓ 1:N
+    ↓ 1:N               ↓ M:N
+reviews (レビュー)    cart_items (カート) → purchase (購入履歴)
+                         ↓ 1:N
 likes (いいね)
 ```
 
-## 開発で苦労した実装ポイント
+## 最新の実装内容 ✨
 
-### 1. Stripe API の価格データ変換
+### レビュー機能の実装詳細
+
+1. **レビューページ (`/image/[id]/review`)**
+   - 商品詳細ページから自然な遷移
+   - レビュー投稿フォーム（星評価 + コメント）
+   - 平均評価の自動計算・表示
+   - レビュー一覧の時系列表示
+
+2. **商品詳細ページ連携**
+   - `image/[id]/ImageClient.tsx`からレビューページへの遷移ボタン
+   - 統一されたURL構造 (`/image/[id]/review`)
+
+3. **Supabase連携**
+   - reviewテーブルとshoppostsテーブルの適切な結合
+   - 認証済みユーザーのレビュー投稿制限
+   - 重複レビュー防止機能
+   - リアルタイムでのレビュー表示
+
+4. **UI/UX改善**
+   - インタラクティブな星評価システム
+   - レスポンシブ対応
+   - ローディング状態の表示
+
+### 購入履歴機能の実装詳細
+
+1. **マイページ統合 (`/dashboard/customer`)**
+   - 既存のプロフィール管理と統合
+   - 購入履歴コンポーネントの追加
+   - お気に入り機能との共存
+
+2. **購入履歴表示**
+   - 注文番号、日付、金額の表示
+   - 決済状況の視覚的表示
+   - 購入商品の詳細表示
+
+3. **決済連携**
+   - Stripe決済成功時の自動データベース保存
+   - 決済セッション情報の適切な管理
+   - 重複購入記録の防止
+
+### 決済完了ページの改善
+
+1. **Suspense対応**
+   - Next.js 15のuseSearchParams要件に対応
+   - 適切なローディング画面の実装
+
+2. **エラーハンドリング**
+   - 決済失敗時の適切な表示
+   - セッション情報取得エラーの処理
+
+3. **ユーザー体験向上**
+   - 成功メッセージの表示
+   - 次のアクションへの誘導
+
+## 開発で苦労した実装ポイント
 **課題**: データベースに保存されている価格が `"2200円(税抜)"` のような文字列形式で、Stripe APIには数値として渡す必要がある
 
 ```typescript
@@ -395,6 +471,74 @@ export async function POST(request: Request) {
 - Stripe WebhookとPrismaトランザクションの組み合わせ
 - 重複購入防止ロジック
 - エラー時のロールバック処理
+
+### 5. レビュー機能とNext.js 15の対応 ✨ NEW
+**課題**: Next.js 15でのuseSearchParams()のSuspense境界要件とレビューシステムの実装
+
+```typescript
+// レビューページでのSuspense対応
+function ReviewContent({ params }: { params: Promise<{ id: string }> }) {
+  const [shopId, setShopId] = useState<string>("")
+  
+  // paramsを非同期で解決
+  useEffect(() => {
+    const resolveParams = async () => {
+      const resolvedParams = await params
+      setShopId(resolvedParams.id)
+    }
+    resolveParams()
+  }, [params])
+
+  // レビューデータ取得
+  const fetchReviews = async () => {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('shoppost_id', shopId)
+      .order('created_at', { ascending: false })
+  }
+}
+
+// Suspense境界での包含
+export default function ReviewPage({ params }: PageProps) {
+  return (
+    <Suspense fallback={<ReviewLoading />}>
+      <ReviewContent params={params} />
+    </Suspense>
+  )
+}
+```
+
+### 6. 購入履歴とStripe決済の統合 ✨ NEW
+**課題**: Stripe Checkoutの成功後に購入履歴を確実にデータベースに保存し、マイページで表示する
+
+```typescript
+// app/api/checkout/success/route.ts
+export async function GET(request: NextRequest) {
+  // Stripe セッション取得
+  const session = await stripe.checkout.sessions.retrieve(sessionId, {
+    expand: ['line_items']
+  })
+
+  // Supabaseに購入履歴を保存（重複チェック付き）
+  const { data: existingOrder } = await supabase
+    .from('purchase')
+    .select('id')
+    .eq('session_id', sessionId)
+    .single()
+
+  if (!existingOrder) {
+    const orderData = {
+      session_id: sessionId,
+      user_id: session.metadata?.user_id,
+      amount: session.amount_total ? session.amount_total / 100 : 0,
+      items: session.metadata?.items ? JSON.parse(session.metadata.items) : [],
+    }
+    
+    await supabase.from('purchase').insert(orderData)
+  }
+}
+```
 
 ### 4. 認証状態とカート連携
 **課題**: ユーザーログイン状態とカート情報の同期、未認証時の適切な処理
